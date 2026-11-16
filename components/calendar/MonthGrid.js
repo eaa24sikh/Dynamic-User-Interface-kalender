@@ -24,7 +24,7 @@ export default function MonthGrid({ weeks, selectedIso, eventDates }) {
               return (
                 <Link
                   key={day.iso}
-                  href={`/dag/${day.iso}`}
+                  href={`/dag?dato=${day.iso}`}
                   className={classNames.join(" ")}
                   aria-label={formatLongDate(day.date)}
                   aria-current={day.iso === selectedIso ? "date" : undefined}

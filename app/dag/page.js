@@ -106,12 +106,13 @@ function getPlanLabel(plan, plans, isToday) {
   return next === plan ? `Næste - ${until}` : until;
 }
 
-export default async function DayPage({ params, searchParams }) {
-  const { dato } = await params;
-  const { fane, nr } = await searchParams;
+export default async function DayPage({ searchParams }) {
+  const { dato: datoParam, fane, nr } = await searchParams;
 
-  const date = parseIsoDate(dato);
+  // Without ?dato= the page shows today
+  const date = datoParam === undefined ? today() : parseIsoDate(datoParam);
   if (!date) notFound();
+  const dato = toIsoDate(date);
 
   const activeTab = TABS[fane] ? fane : "planer";
   const { plans, notes, photos } = await getDayData(dato);
@@ -120,11 +121,11 @@ export default async function DayPage({ params, searchParams }) {
   // nr picks which plan, note or photo is shown on the card
   const index = Math.abs(Number.parseInt(nr, 10) || 0) % Math.max(items.length, 1);
   const item = items[index];
-  const tabQuery = activeTab === "planer" ? "" : `?fane=${activeTab}`;
+  const tabQuery = activeTab === "planer" ? "" : `&fane=${activeTab}`;
   const more =
     items.length > 1
       ? {
-          href: `/dag/${dato}?fane=${activeTab}&nr=${(index + 1) % items.length}`,
+          href: `/dag?dato=${dato}&fane=${activeTab}&nr=${(index + 1) % items.length}`,
           label: TABS[activeTab].more,
         }
       : null;
