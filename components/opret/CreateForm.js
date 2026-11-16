@@ -4,6 +4,8 @@ import { useActionState, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createItem } from "@/app/opret/actions";
+import Icon from "@/components/Icon";
+import Toggle from "@/components/Toggle";
 import { formatShortDate, parseIsoDate } from "@/lib/calendar";
 import styles from "./CreateForm.module.css";
 
@@ -78,30 +80,27 @@ function ReminderFields({ date, setDate }) {
     <>
       <div className={styles.list}>
         <label className={styles.row}>
-          <Image src="/icons/opret/calendar.svg" alt="" width={18} height={18} />
+          <Icon src="/icons/opret/calendar.svg" width={18} height={18} />
           <span className={styles.rowText}>{formatShortDate(parseIsoDate(date))}</span>
           <DateInput date={date} onChange={setDate} />
         </label>
         <div className={styles.row}>
-          <Image src="/icons/opret/time.svg" alt="" width={18} height={18} />
+          <Icon src="/icons/opret/time.svg" width={18} height={18} />
           <SlotSelect className={`${styles.slot} ${styles.slotPlain}`} />
         </div>
         <label className={`${styles.row} ${styles.spread}`}>
           <span className={styles.rowLabel}>
-            <Image src="/icons/opret/bell.svg" alt="" width={18} height={18} />
+            <Icon src="/icons/opret/bell.svg" width={18} height={18} />
             <span className={styles.interText}>Alarm</span>
           </span>
-          <span className={styles.toggle}>
-            <input type="checkbox" name="alarm" />
-            <span className={styles.track} aria-hidden="true" />
-          </span>
+          <Toggle name="alarm" />
         </label>
       </div>
 
       <label className={`${styles.card} ${styles.repeat}`}>
         <span className={styles.repeatLabel}>
           <span className={styles.repeatIcon}>
-            <Image src="/icons/opret/repeat.svg" alt="" width={20} height={22} />
+            <Icon src="/icons/opret/repeat.svg" width={20} height={22} />
           </span>
           <span className={styles.rowText}>Gentag</span>
         </span>
@@ -114,8 +113,8 @@ function ReminderFields({ date, setDate }) {
             ))}
           </select>
           <span className={styles.arrows} aria-hidden="true">
-            <Image src="/icons/opret/arrow-up.svg" alt="" width={24} height={24} className={styles.arrowUp} />
-            <Image src="/icons/opret/arrow-down.svg" alt="" width={24} height={24} className={styles.arrowDown} />
+            <Icon src="/icons/opret/arrow-up.svg" width={24} height={24} color="var(--reminder-dato)" className={styles.arrowUp} />
+            <Icon src="/icons/opret/arrow-down.svg" width={24} height={24} color="var(--reminder-dato)" className={styles.arrowDown} />
           </span>
         </span>
       </label>
@@ -139,19 +138,19 @@ function EventFields({ date, setDate }) {
       <div className={styles.list}>
         <div className={`${styles.row} ${styles.spread}`}>
           <label className={styles.rowLabel}>
-            <Image src="/icons/opret/calendar.svg" alt="" width={18} height={18} />
+            <Icon src="/icons/opret/calendar.svg" width={18} height={18} />
             <span className={styles.rowText}>{formatShortDate(parseIsoDate(date))}</span>
             <DateInput date={date} onChange={setDate} />
           </label>
           <SlotSelect className={styles.slot} />
         </div>
         <label className={`${styles.row} ${styles.tight}`}>
-          <Image src="/icons/opret/location.svg" alt="" width={21} height={21} />
+          <Icon src="/icons/opret/location.svg" width={21} height={21} />
           <input name="location" className={`${styles.interText} ${styles.textInput}`} placeholder="Tilføj sted" />
         </label>
         <label className={`${styles.row} ${styles.spread}`}>
           <span className={styles.rowLabel}>
-            <Image src="/icons/opret/bell.svg" alt="" width={18} height={18} />
+            <Icon src="/icons/opret/bell.svg" width={18} height={18} />
             <span className={styles.interText}>Påmindelse</span>
           </span>
           <select name="reminder" defaultValue="60" className={styles.valueSelect}>
@@ -164,7 +163,7 @@ function EventFields({ date, setDate }) {
         </label>
         <label className={`${styles.row} ${styles.spread}`}>
           <span className={`${styles.rowLabel} ${styles.tight}`}>
-            <Image src="/icons/opret/people.svg" alt="" width={19} height={19} />
+            <Icon src="/icons/opret/people.svg" width={19} height={19} />
             <span className={styles.interText}>Inviter venner</span>
           </span>
           <input name="invitees" className={`${styles.interText} ${styles.inviteInput}`} placeholder="Tilføj navne" />

@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import Icon from "@/components/Icon";
 import { formatLongDate, formatTime, toIsoDate } from "@/lib/calendar";
 import styles from "./DayDetails.module.css";
 
@@ -23,7 +23,7 @@ export default function DayDetails({ date, events, notes, reminders }) {
         <ul className={styles.events}>
           {events.map((event) => (
             <li key={event.id} className={styles.event}>
-              <Image src="/icons/reminder-dot.svg" alt="" width={9.215} height={8.485} />
+              <Icon src="/icons/reminder-dot.svg" width={9.215} height={8.485} color="var(--prik-ud-fra-reminder)" />
               <span>
                 {event.start_time && `${formatTime(event.start_time)} - `}
                 {event.title}

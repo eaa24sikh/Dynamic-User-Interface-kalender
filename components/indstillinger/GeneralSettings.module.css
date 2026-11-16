@@ -1,0 +1,89 @@
+.general {
+  margin: 43px 0 0;
+  padding: 0 43px 0 18px;
+}
+
+.sectionTitle {
+  margin: 0 0 0 2px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 42px;
+  letter-spacing: -0.45px;
+}
+
+.small {
+  margin-top: 8px;
+  font-size: 15px;
+  letter-spacing: -0.375px;
+}
+
+.account {
+  margin-top: 18px;
+}
+
+/* The white list with dividers */
+.list {
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--hvid-baggrund);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 58px;
+  padding: 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 42px;
+  letter-spacing: -0.375px;
+}
+
+.row + .row {
+  border-top: 1px solid var(--baggrund);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.wideGap {
+  gap: 12px;
+}
+
+.value {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--reminder-dato);
+}
+
+.chevron {
+  transform: scaleX(-1);
+}
+
+/* Four small squares: "start view" */
+.gridIcon {
+  display: grid;
+  grid-template-columns: repeat(2, 7px);
+  gap: 2px;
+  width: 18px;
+  padding-left: 1px;
+}
+
+.gridIcon span {
+  height: 6px;
+  border: 1px solid var(--reminder-tekst);
+  border-radius: 1px;
+}
+
+.cloud {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
