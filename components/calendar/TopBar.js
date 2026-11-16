@@ -2,8 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./TopBar.module.css";
 
-// Without backLabel the back button is a small square with only the arrow
-export default function TopBar({ backHref, backLabel }) {
+// Without backLabel the back button is a small square with only the arrow.
+// dateIso is the day the plus button creates something on.
+export default function TopBar({ backHref, backLabel, dateIso }) {
   return (
     <nav className={backLabel ? styles.topBar : `${styles.topBar} ${styles.compact}`}>
       <Link href={backHref} className={styles.back} aria-label={backLabel ? undefined : "Tilbage"}>

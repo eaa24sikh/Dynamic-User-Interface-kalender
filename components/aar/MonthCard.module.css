@@ -1,0 +1,55 @@
+.card {
+  position: relative;
+  display: block;
+  height: 87px;
+  border-radius: 20px;
+  background: var(--aar-andre-maaneder);
+}
+
+.current {
+  border: 2px solid var(--aktiv-dag);
+  background: var(--aar-aktiv-maaned);
+}
+
+.name {
+  position: absolute;
+  top: -7px;
+  left: 11px;
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 900;
+  line-height: 42px;
+  letter-spacing: -0.375px;
+}
+
+/* Monday to Sunday, like the month view */
+.dots {
+  position: absolute;
+  top: 29px;
+  left: 15px;
+  display: grid;
+  grid-template-columns: repeat(7, 5px);
+  gap: 3px 8px;
+}
+
+/* The border moves the content, so the dots are moved back */
+.current .name {
+  top: -9px;
+  left: 9px;
+}
+
+.current .dots {
+  top: 27px;
+  left: 13px;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--aar-inaktiv-dag);
+}
+
+.busy {
+  background: var(--reminder-tekst);
+}
