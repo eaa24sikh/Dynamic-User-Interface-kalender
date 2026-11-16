@@ -8,7 +8,7 @@ export default function DayTabs({ dateIso, tabs, activeTab }) {
       {tabs.map((tab) => (
         <Link
           key={tab.id}
-          href={`/dag?dato=${dateIso}&fane=${tab.id}`}
+          href={`/dag/${dateIso}?fane=${tab.id}`}
           scroll={false}
           className={tab.id === activeTab ? `${styles.tab} ${styles.active}` : styles.tab}
           aria-current={tab.id === activeTab ? "page" : undefined}

@@ -2,7 +2,7 @@ import Image from "next/image";
 import { formatTime } from "@/lib/calendar";
 import styles from "./PlanCard.module.css";
 
-// plan: an event or a reminder, see getPlans() in app/dag/page.js
+// plan: an event or a reminder, see getPlans() in app/dag/[dato]/page.js
 export default function PlanCard({ plan, label }) {
   const start = formatTime(plan.start);
   const end = formatTime(plan.end);
