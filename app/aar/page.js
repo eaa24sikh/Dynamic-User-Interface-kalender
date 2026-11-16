@@ -1,76 +1,106 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getEvents, getNotes, getReminders, getStickers } from "@/lib/supabase/server";
 import { isoWeek, parseIsoDate, toIsoDate, today } from "@/lib/calendar";
 import TopBar from "@/components/calendar/TopBar";
 import MonthCard from "@/components/aar/MonthCard";
 import Highlights from "@/components/aar/Highlights";
 import styles from "./page.module.css";
 
-// How many years are shown below each other
+// Hvor mange år der vises under hinanden
 const YEAR_COUNT = 3;
 
-async function getYearData(firstYear, lastYear) {
-  const supabase = await createClient();
-  const range = (query) => query.gte("date", `${firstYear}-01-01`).lte("date", `${lastYear}-12-31`);
+// Månederne 0 (januar) til 11 (december)
+const MONTHS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
-  const [events, reminders, notes] = await Promise.all([
-    range(supabase.from("events").select("date, sticker")),
-    range(supabase.from("reminders").select("date")),
-    range(supabase.from("notes").select("date")),
-  ]);
-
-  for (const result of [events, reminders, notes]) {
-    if (result.error) console.error(result.error.message);
+// Finder den værdi, der står flest gange i listen.
+// Giver { value, count } – eller null, hvis listen er tom.
+function mostCommon(values) {
+  // Tæl hvor mange gange hver værdi står i listen
+  const counts = {};
+  for (const value of values) {
+    if (counts[value]) {
+      counts[value] = counts[value] + 1;
+    } else {
+      counts[value] = 1;
+    }
   }
 
-  return {
-    events: events.data ?? [],
-    reminders: reminders.data ?? [],
-    notes: notes.data ?? [],
-  };
-}
-
-// The value that appears most often, as { key, count }, or null for an empty list
-function mostCommon(keys) {
-  const counts = new Map();
-  for (const key of keys) counts.set(key, (counts.get(key) ?? 0) + 1);
-
+  // Find den værdi, der blev talt flest gange
   let best = null;
-  for (const [key, count] of counts) {
-    if (!best || count > best.count) best = { key, count };
+  for (const value of values) {
+    if (best === null || counts[value] > best.count) {
+      best = { value: value, count: counts[value] };
+    }
   }
   return best;
 }
 
-function getHighlights(year, events, reminders) {
-  const inYear = (item) => item.date.startsWith(`${year}-`);
+// Regner "Årets højdepunkter" ud for ét år
+function getHighlights(year, events, reminders, stickers) {
+  const yearStart = `${year}-`;
 
-  // Each event can have one sticker
-  const stickerMonths = events
-    .filter((event) => inYear(event) && event.sticker)
-    .map((event) => Number(event.date.slice(5, 7)) - 1);
+  // Måneden for hver sticker (0 = januar)
+  const stickerMonths = [];
+  for (const sticker of stickers) {
+    if (sticker.date.startsWith(yearStart)) {
+      stickerMonths.push(Number(sticker.date.slice(5, 7)) - 1);
+    }
+  }
 
-  // "Planer" are events and reminders, like on the day page
-  const planWeeks = [...events, ...reminders].filter(inYear).map((plan) => isoWeek(parseIsoDate(plan.date)));
+  // Ugenummeret for hver plan. Planer er begivenheder og påmindelser, ligesom på dagssiden.
+  const planWeeks = [];
+  for (const plan of events.concat(reminders)) {
+    if (plan.date.startsWith(yearStart)) {
+      planWeeks.push(isoWeek(parseIsoDate(plan.date)));
+    }
+  }
 
-  const stickerMonth = mostCommon(stickerMonths);
-  const busiestWeek = mostCommon(planWeeks);
+  let stickerMonth = null;
+  const mostStickers = mostCommon(stickerMonths);
+  if (mostStickers) {
+    stickerMonth = { monthIndex: mostStickers.value, count: mostStickers.count };
+  }
 
-  return {
-    stickerMonth: stickerMonth && { monthIndex: stickerMonth.key, count: stickerMonth.count },
-    busiestWeek: busiestWeek && { week: busiestWeek.key, count: busiestWeek.count },
-  };
+  let busiestWeek = null;
+  const mostPlans = mostCommon(planWeeks);
+  if (mostPlans) {
+    busiestWeek = { week: mostPlans.value, count: mostPlans.count };
+  }
+
+  return { stickerMonth: stickerMonth, busiestWeek: busiestWeek };
 }
 
-// /aar?aar=2026 – starts with this year without ?aar=
+// Årsoversigten. Adressen kan være fx /aar?aar=2026 (i år, hvis den mangler)
 export default async function YearPage({ searchParams }) {
-  const { aar } = await searchParams;
+  const params = await searchParams;
   const todayIso = toIsoDate(today());
-  const firstYear = /^\d{4}$/.test(aar ?? "") ? Number(aar) : Number(todayIso.slice(0, 4));
-  const years = Array.from({ length: YEAR_COUNT }, (_, index) => firstYear + index);
 
-  const { events, reminders, notes } = await getYearData(firstYear, years.at(-1));
-  const busyDates = new Set([...events, ...reminders, ...notes].map((item) => item.date));
+  // Det første år der vises
+  let firstYear = Number(todayIso.slice(0, 4));
+  const chosenYear = Number(params.aar);
+  if (Number.isInteger(chosenYear) && chosenYear >= 1000 && chosenYear <= 9999) {
+    firstYear = chosenYear;
+  }
+
+  const years = [];
+  for (let i = 0; i < YEAR_COUNT; i++) {
+    years.push(firstYear + i);
+  }
+  const lastYear = years[years.length - 1];
+
+  // Hent alt fra 1. januar i det første år til 31. december i det sidste
+  const fromDate = `${firstYear}-01-01`;
+  const toDate = `${lastYear}-12-31`;
+  const events = await getEvents(fromDate, toDate);
+  const reminders = await getReminders(fromDate, toDate);
+  const notes = await getNotes(fromDate, toDate);
+  const stickers = await getStickers(fromDate, toDate);
+
+  // Alle dage der har en begivenhed, påmindelse eller note – de får en farvet prik
+  const busyDates = [];
+  for (const item of events.concat(reminders, notes)) {
+    busyDates.push(item.date);
+  }
 
   return (
     <main className={styles.page}>
@@ -83,7 +113,7 @@ export default async function YearPage({ searchParams }) {
           </h2>
 
           <div className={styles.months}>
-            {Array.from({ length: 12 }, (_, monthIndex) => (
+            {MONTHS.map((monthIndex) => (
               <MonthCard
                 key={monthIndex}
                 year={year}
@@ -94,7 +124,7 @@ export default async function YearPage({ searchParams }) {
             ))}
           </div>
 
-          <Highlights {...getHighlights(year, events, reminders)} />
+          <Highlights highlights={getHighlights(year, events, reminders, stickers)} />
         </section>
       ))}
 

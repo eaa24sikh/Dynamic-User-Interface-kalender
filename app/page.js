@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getEvents, getNotes, getReminders } from "@/lib/supabase/server";
 import { formatMonth, getMonthGrid, parseIsoDate, toIsoDate, today } from "@/lib/calendar";
 import TopBar from "@/components/calendar/TopBar";
 import MonthGrid from "@/components/calendar/MonthGrid";
@@ -6,72 +6,48 @@ import DayDetails from "@/components/calendar/DayDetails";
 import StickerTray from "@/components/calendar/StickerTray";
 import styles from "./page.module.css";
 
-// Fetches events, notes and reminders for every day shown in the grid.
-async function getCalendarData(start, end) {
-  const supabase = await createClient();
+// Månedsoversigten (forsiden). Adressen kan være fx /?dato=2026-11-09
+export default async function Home({ searchParams }) {
+  const params = await searchParams;
 
-  const [events, notes, reminders] = await Promise.all([
-    supabase
-      .from("events")
-      .select("id, date, title, start_time")
-      .gte("date", start)
-      .lte("date", end)
-      .order("start_time", { nullsFirst: true }),
-    supabase
-      .from("notes")
-      .select("id, date, content")
-      .gte("date", start)
-      .lte("date", end)
-      .order("created_at"),
-    supabase
-      .from("reminders")
-      .select("id, date, title, time")
-      .gte("date", start)
-      .lte("date", end)
-      .order("time", { nullsFirst: true }),
-  ]);
+  // Den valgte dag står i adressen. Står der ingen (eller en forkert) dato, bruges i dag.
+  let selected = parseIsoDate(params.dato);
+  if (!selected) {
+    selected = today();
+  }
+  const selectedIso = toIsoDate(selected);
+  const year = selected.getUTCFullYear();
 
-  for (const result of [events, notes, reminders]) {
-    if (result.error) console.error(result.error.message);
+  // Alle dage i kalenderen, også dem fra måneden før og efter
+  const grid = getMonthGrid(selected);
+
+  // Hent alt for de dage, der vises i kalenderen
+  const events = await getEvents(grid.start, grid.end);
+  const notes = await getNotes(grid.start, grid.end);
+  const reminders = await getReminders(grid.start, grid.end);
+
+  // Dage med mindst én begivenhed bliver farvet blå i kalenderen
+  const eventDates = [];
+  for (const event of events) {
+    eventDates.push(event.date);
   }
 
-  return {
-    events: events.data ?? [],
-    notes: notes.data ?? [],
-    reminders: reminders.data ?? [],
-  };
-}
-
-export default async function Home({ searchParams }) {
-  const { dato } = await searchParams;
-  const selected = parseIsoDate(dato) ?? today();
-  const selectedIso = toIsoDate(selected);
-
-  const { weeks, start, end } = getMonthGrid(selected);
-  const { events, notes, reminders } = await getCalendarData(start, end);
-
-  const onSelectedDay = (item) => item.date === selectedIso;
+  // Kortet under kalenderen viser kun det, der sker på den valgte dag
+  const eventsOnDay = events.filter((event) => event.date === selectedIso);
+  const notesOnDay = notes.filter((note) => note.date === selectedIso);
+  const remindersOnDay = reminders.filter((reminder) => reminder.date === selectedIso);
 
   return (
     <main className={styles.page}>
-      <TopBar backHref={`/aar?aar=${selected.getUTCFullYear()}`} backLabel={selected.getUTCFullYear()} dateIso={selectedIso} />
+      <TopBar backHref={`/aar?aar=${year}`} backLabel={year} dateIso={selectedIso} />
 
       <h1 className={styles.month}>
         <span>{formatMonth(selected)}</span>
       </h1>
 
-      <MonthGrid
-        weeks={weeks}
-        selectedIso={selectedIso}
-        eventDates={new Set(events.map((event) => event.date))}
-      />
+      <MonthGrid weeks={grid.weeks} selectedIso={selectedIso} eventDates={eventDates} />
 
-      <DayDetails
-        date={selected}
-        events={events.filter(onSelectedDay)}
-        notes={notes.filter(onSelectedDay)}
-        reminders={reminders.filter(onSelectedDay)}
-      />
+      <DayDetails date={selected} events={eventsOnDay} notes={notesOnDay} reminders={remindersOnDay} />
 
       <StickerTray />
     </main>

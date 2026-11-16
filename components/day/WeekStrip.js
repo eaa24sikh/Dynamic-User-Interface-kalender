@@ -2,20 +2,29 @@ import Link from "next/link";
 import { formatLongDate, formatShortWeekday, getWeekStrip, toIsoDate } from "@/lib/calendar";
 import styles from "./WeekStrip.module.css";
 
-// tabQuery keeps the open tab when you move to another day, e.g. "&fane=noter"
+// Ugebåndet øverst på dagssiden: den valgte dag med tre dage på hver side.
+//
+//   tabQuery – den åbne fane, fx "&fane=noter", så den bliver åben, når man skifter dag
 export default function WeekStrip({ date, tabQuery }) {
   const selectedIso = toIsoDate(date);
+  const days = getWeekStrip(date);
 
   return (
     <nav className={styles.strip}>
-      {getWeekStrip(date).map((day) => {
+      {days.map((day) => {
         const isSelected = day.iso === selectedIso;
+
+        let dayClass = styles.day;
+        if (isSelected) {
+          dayClass = `${styles.day} ${styles.selected}`;
+        }
+
         return (
           <Link
             key={day.iso}
             href={`/dag?dato=${day.iso}${tabQuery}`}
             scroll={false}
-            className={isSelected ? `${styles.day} ${styles.selected}` : styles.day}
+            className={dayClass}
             aria-label={formatLongDate(day.date)}
             aria-current={isSelected ? "date" : undefined}
           >

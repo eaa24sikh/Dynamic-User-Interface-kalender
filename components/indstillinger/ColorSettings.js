@@ -3,8 +3,8 @@ import { chooseColorScheme } from "@/app/indstillinger/actions";
 import { COLOR_SCHEMES } from "@/lib/settings";
 import styles from "./ColorSettings.module.css";
 
-// Two weeks of a small calendar. It uses the same colours as the app,
-// so it changes when you pick another colour scheme.
+// En lille kalender med to uger, som viser hvordan appen ser ud.
+// Den bruger de samme farver som resten af appen, så den skifter med det samme.
 const PREVIEW_WEEKS = [
   [2, 3, 4, 5, 6, 7, 8],
   [9, 10, 11, 12, 13, 14, 15],
@@ -12,12 +12,9 @@ const PREVIEW_WEEKS = [
 const PREVIEW_EVENTS = [4, 13];
 const PREVIEW_SELECTED = 9;
 
-function previewClass(day) {
-  if (day === PREVIEW_SELECTED) return `${styles.previewDay} ${styles.previewSelected}`;
-  if (PREVIEW_EVENTS.includes(day)) return `${styles.previewDay} ${styles.previewEvent}`;
-  return styles.previewDay;
-}
-
+// Fanen "Farver" på /indstillinger.
+//
+//   activeId – det farvetema der er valgt nu, fx "natur"
 export default function ColorSettings({ activeId }) {
   return (
     <>
@@ -28,34 +25,50 @@ export default function ColorSettings({ activeId }) {
         </div>
         {PREVIEW_WEEKS.map((week) => (
           <div key={week[0]} className={styles.previewWeek}>
-            {week.map((day) => (
-              <span key={day} className={previewClass(day)}>
-                {day}
-              </span>
-            ))}
+            {week.map((day) => {
+              // Den valgte dag er lyserød, dage med begivenheder er blå
+              let dayClass = styles.previewDay;
+              if (day === PREVIEW_SELECTED) {
+                dayClass = `${styles.previewDay} ${styles.previewSelected}`;
+              } else if (PREVIEW_EVENTS.includes(day)) {
+                dayClass = `${styles.previewDay} ${styles.previewEvent}`;
+              }
+
+              return (
+                <span key={day} className={dayClass}>
+                  {day}
+                </span>
+              );
+            })}
           </div>
         ))}
       </section>
 
       <h2 className={styles.heading}>Vælg farver til hele appen</h2>
 
+      {/* Hvert farvetema er en lille formular. Et klik sender det til chooseColorScheme() */}
       <div className={styles.options}>
-        {COLOR_SCHEMES.map((scheme) => (
-          <form key={scheme.id} action={chooseColorScheme} className={styles.option}>
-            <input type="hidden" name="farve" value={scheme.id} />
-            <button
-              type="submit"
-              className={scheme.id === activeId ? `${styles.choice} ${styles.active}` : styles.choice}
-              aria-pressed={scheme.id === activeId}
-            >
-              <Image src={scheme.preview} alt="" width={81} height={74} />
-              <span className={styles.text}>
-                <span className={styles.name}>{scheme.name}</span>
-                <span className={styles.description}>{scheme.description}</span>
-              </span>
-            </button>
-          </form>
-        ))}
+        {COLOR_SCHEMES.map((scheme) => {
+          const isActive = scheme.id === activeId;
+
+          let buttonClass = styles.choice;
+          if (isActive) {
+            buttonClass = `${styles.choice} ${styles.active}`;
+          }
+
+          return (
+            <form key={scheme.id} action={chooseColorScheme} className={styles.option}>
+              <input type="hidden" name="farve" value={scheme.id} />
+              <button type="submit" className={buttonClass} aria-pressed={isActive}>
+                <Image src={scheme.preview} alt="" width={81} height={74} />
+                <span className={styles.text}>
+                  <span className={styles.name}>{scheme.name}</span>
+                  <span className={styles.description}>{scheme.description}</span>
+                </span>
+              </button>
+            </form>
+          );
+        })}
       </div>
     </>
   );

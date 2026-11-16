@@ -21,7 +21,7 @@
   margin-top: 18px;
 }
 
-/* The white list with dividers */
+/* Den hvide liste med streger imellem */
 .list {
   overflow: hidden;
   border-radius: 20px;
@@ -42,6 +42,27 @@
 
 .row + .row {
   border-top: 1px solid var(--baggrund);
+}
+
+/* "Log ud"-knappen under listerne */
+.logout {
+  width: 100%;
+  height: 58px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--hvid-baggrund);
+  color: var(--dagen-tekst-farve);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.375px;
+  cursor: pointer;
+}
+
+.logout:focus-visible {
+  outline: 2px solid var(--dagen-tekst-farve);
+  outline-offset: 2px;
 }
 
 .label {
@@ -65,7 +86,7 @@
   transform: scaleX(-1);
 }
 
-/* Four small squares: "start view" */
+/* Fire små firkanter: ikonet for "Startvisning" */
 .gridIcon {
   display: grid;
   grid-template-columns: repeat(2, 7px);

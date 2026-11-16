@@ -3,9 +3,9 @@
   max-width: 392px;
   min-height: 100dvh;
   margin: 0 auto;
-  /* Room for the sticker tray at the bottom */
+  /* Plads til sticker-bjælken i bunden */
   padding: 32px 0 167px;
-  /* Holiday background from /indstillinger, only inside the phone-sized column */
+  /* Højtids-baggrunden fra /indstillinger – kun inden for den mobil-brede kolonne */
   background: var(--tema-billede, none) center top / cover no-repeat;
 }
 
@@ -28,7 +28,7 @@
   isolation: isolate;
 }
 
-/* Yellow highlighter behind the month name */
+/* Gul overstregning bag månedens navn */
 .month span::before {
   content: "";
   position: absolute;

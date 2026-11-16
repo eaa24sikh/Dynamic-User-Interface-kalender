@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getEventImages, getEvents, getNotes, getReminders } from "@/lib/supabase/server";
 import { formatDayTitle, nowInMinutes, parseIsoDate, timeToMinutes, toIsoDate, today } from "@/lib/calendar";
 import TopBar from "@/components/calendar/TopBar";
 import WeekStrip from "@/components/day/WeekStrip";
@@ -9,66 +9,63 @@ import CardStack from "@/components/day/CardStack";
 import PlanCard from "@/components/day/PlanCard";
 import styles from "./page.module.css";
 
+// Teksterne til de tre faner
 const TABS = {
   planer: { label: "Planer", more: "Se flere planer", empty: "Ingen planer denne dag" },
   noter: { label: "Noter", more: "Se flere noter", empty: "Ingen noter denne dag" },
   minder: { label: "Minder", more: "Se næste minde", empty: "Ingen minder denne dag" },
 };
 
-// Photos are saved in this Supabase Storage bucket
-const MEMORY_BUCKET = "minder";
+// Billederne (minder) ligger i denne mappe i Supabase Storage
+const IMAGE_BUCKET = "event-images";
 
-async function getDayData(dateIso) {
-  const supabase = await createClient();
-
-  const [events, reminders, notes, memories] = await Promise.all([
-    supabase
-      .from("events")
-      .select("id, title, start_time, end_time, location, description")
-      .eq("date", dateIso)
-      .order("start_time", { nullsFirst: true }),
-    supabase
-      .from("reminders")
-      .select("id, title, time")
-      .eq("date", dateIso)
-      .order("time", { nullsFirst: true }),
-    supabase.from("notes").select("id, content").eq("date", dateIso).order("created_at"),
-    supabase
-      .from("memories")
-      .select("id, image_path, events(title)")
-      .eq("date", dateIso)
-      .order("taken_at"),
-  ]);
-
-  for (const result of [events, reminders, notes, memories]) {
-    if (result.error) console.error(result.error.message);
+// Henter billederne fra dagens begivenheder og laver et link til hvert billede.
+// Mappen er privat, så hvert billede skal have et "signeret" link, der virker i en time.
+async function getPhotos(dateIso) {
+  const images = await getEventImages(dateIso);
+  if (images.length === 0) {
+    return [];
   }
 
-  // The bucket is private, so the photos need signed links (valid for an hour)
-  let photos = [];
-  if (memories.data?.length) {
-    const { data, error } = await supabase.storage
-      .from(MEMORY_BUCKET)
-      .createSignedUrls(memories.data.map((memory) => memory.image_path), 60 * 60);
-    if (error) console.error(error.message);
-    photos = memories.data.map((memory, index) => ({
-      id: memory.id,
-      url: data?.[index]?.signedUrl,
-      alt: memory.events ? `Minde fra ${memory.events.title}` : "Minde",
-    }));
+  const paths = [];
+  for (const image of images) {
+    paths.push(image.storage_path);
   }
 
-  return {
-    plans: getPlans(events.data ?? [], reminders.data ?? []),
-    notes: notes.data ?? [],
-    photos: photos.filter((photo) => photo.url),
-  };
+  const supabase = createClient();
+  const result = await supabase.storage.from(IMAGE_BUCKET).createSignedUrls(paths, 60 * 60);
+  if (result.error) {
+    console.error(`Kunne ikke hente billeder: ${result.error.message}`);
+    return [];
+  }
+
+  const photos = [];
+  for (let i = 0; i < images.length; i++) {
+    const image = images[i];
+    const link = result.data[i];
+
+    // Spring billeder over, der ikke kunne laves et link til
+    if (!link || !link.signedUrl) {
+      continue;
+    }
+
+    // Billedteksten fra databasen, ellers "Minde fra <begivenhed>"
+    let alt = `Minde fra ${image.events.title}`;
+    if (image.alt_text) {
+      alt = image.alt_text;
+    }
+
+    photos.push({ id: image.id, url: link.signedUrl, alt: alt });
+  }
+  return photos;
 }
 
-// Events and reminders in one list, sorted by time
+// Lægger begivenheder og påmindelser sammen i én liste ("planer"), sorteret efter tidspunkt
 function getPlans(events, reminders) {
-  const plans = [
-    ...events.map((event) => ({
+  const plans = [];
+
+  for (const event of events) {
+    plans.push({
       id: `event-${event.id}`,
       isEvent: true,
       title: event.title,
@@ -76,59 +73,180 @@ function getPlans(events, reminders) {
       end: event.end_time,
       location: event.location,
       description: event.description,
-    })),
-    ...reminders.map((reminder) => ({
+    });
+  }
+
+  for (const reminder of reminders) {
+    plans.push({
       id: `reminder-${reminder.id}`,
       isEvent: false,
       title: `Husk: ${reminder.title}`,
       start: reminder.time,
-    })),
-  ];
-  return plans.sort((a, b) => (a.start ?? "").localeCompare(b.start ?? ""));
+    });
+  }
+
+  // Sortér efter tidspunkt. Planer uden tidspunkt kommer først.
+  plans.sort(function (a, b) {
+    const timeA = a.start || "";
+    const timeB = b.start || "";
+    if (timeA < timeB) {
+      return -1;
+    }
+    if (timeA > timeB) {
+      return 1;
+    }
+    return 0;
+  });
+
+  return plans;
 }
 
-// "Næste - om 2 timer", "Nu" or "Påmindelse"
+// Den lille tekst øverst på kortet: "Påmindelse", "Nu" eller fx "Næste - om 2 timer".
+// Giver null, når der ikke skal stå noget.
 function getPlanLabel(plan, plans, isToday) {
-  if (!plan.isEvent) return "Påmindelse";
-  if (!isToday || !plan.start) return null;
+  if (!plan.isEvent) {
+    return "Påmindelse";
+  }
+  if (!isToday || !plan.start) {
+    return null;
+  }
 
   const now = nowInMinutes();
   const start = timeToMinutes(plan.start);
-  const end = plan.end ? timeToMinutes(plan.end) : start;
+  let end = start;
+  if (plan.end) {
+    end = timeToMinutes(plan.end);
+  }
 
-  if (start <= now && now < end) return "Nu";
-  if (start <= now) return null;
+  // Begivenheden er i gang lige nu
+  if (start <= now && now < end) {
+    return "Nu";
+  }
+  // Begivenheden er slut
+  if (start <= now) {
+    return null;
+  }
 
-  const minutes = start - now;
-  const hours = Math.round(minutes / 60);
-  const until = minutes < 60 ? `om ${minutes} min` : `om ${hours} ${hours === 1 ? "time" : "timer"}`;
-  const next = plans.find((other) => other.isEvent && other.start && timeToMinutes(other.start) > now);
-  return next === plan ? `Næste - ${until}` : until;
+  // Hvor lang tid er der til?
+  const minutesLeft = start - now;
+  let until;
+  if (minutesLeft < 60) {
+    until = `om ${minutesLeft} min`;
+  } else {
+    const hours = Math.round(minutesLeft / 60);
+    if (hours === 1) {
+      until = "om 1 time";
+    } else {
+      until = `om ${hours} timer`;
+    }
+  }
+
+  // Er det den første begivenhed, der ikke er startet endnu? Så skriv "Næste"
+  let nextEvent = null;
+  for (const other of plans) {
+    if (other.isEvent && other.start && timeToMinutes(other.start) > now) {
+      nextEvent = other;
+      break;
+    }
+  }
+  if (nextEvent === plan) {
+    return `Næste - ${until}`;
+  }
+  return until;
 }
 
+// Dagssiden. Adressen kan være fx /dag?dato=2026-11-09&fane=noter&nr=1
+//   dato – dagen (i dag, hvis den mangler)
+//   fane – planer, noter eller minder (planer, hvis den mangler)
+//   nr   – hvilken plan, note eller hvilket billede der vises på kortet
 export default async function DayPage({ searchParams }) {
-  const { dato: datoParam, fane, nr } = await searchParams;
+  const params = await searchParams;
 
-  // Without ?dato= the page shows today
-  const date = datoParam === undefined ? today() : parseIsoDate(datoParam);
-  if (!date) notFound();
+  // Står der ingen dato, vises i dag. En forkert dato giver "siden findes ikke".
+  let date;
+  if (params.dato === undefined) {
+    date = today();
+  } else {
+    date = parseIsoDate(params.dato);
+    if (!date) {
+      notFound();
+    }
+  }
   const dato = toIsoDate(date);
+  const isToday = dato === toIsoDate(today());
 
-  const activeTab = TABS[fane] ? fane : "planer";
-  const { plans, notes, photos } = await getDayData(dato);
-  const items = { planer: plans, noter: notes, minder: photos }[activeTab];
+  let activeTab = "planer";
+  if (params.fane === "noter" || params.fane === "minder") {
+    activeTab = params.fane;
+  }
 
-  // nr picks which plan, note or photo is shown on the card
-  const index = Math.abs(Number.parseInt(nr, 10) || 0) % Math.max(items.length, 1);
+  // Hent alt for dagen
+  const events = await getEvents(dato, dato);
+  const reminders = await getReminders(dato, dato);
+  const notes = await getNotes(dato, dato);
+  const photos = await getPhotos(dato);
+  const plans = getPlans(events, reminders);
+
+  // Listen der hører til den valgte fane
+  let items;
+  if (activeTab === "planer") {
+    items = plans;
+  } else if (activeTab === "noter") {
+    items = notes;
+  } else {
+    items = photos;
+  }
+
+  // Hvilket element der vises på kortet (det første, hvis nr mangler eller er forkert)
+  let index = Number(params.nr);
+  if (!Number.isInteger(index) || index < 0 || index >= items.length) {
+    index = 0;
+  }
   const item = items[index];
-  const tabQuery = activeTab === "planer" ? "" : `&fane=${activeTab}`;
-  const more =
-    items.length > 1
-      ? {
-          href: `/dag?dato=${dato}&fane=${activeTab}&nr=${(index + 1) % items.length}`,
-          label: TABS[activeTab].more,
-        }
-      : null;
+
+  // Knappen "Se flere …" går til det næste element, og fra det sidste tilbage til det første.
+  // Den vises kun, når der er mere end ét.
+  let more = null;
+  if (items.length > 1) {
+    let nextIndex = index + 1;
+    if (nextIndex === items.length) {
+      nextIndex = 0;
+    }
+    more = {
+      href: `/dag?dato=${dato}&fane=${activeTab}&nr=${nextIndex}`,
+      label: TABS[activeTab].more,
+    };
+  }
+
+  // Ugebåndet beholder den åbne fane, når man skifter dag
+  let tabQuery = "";
+  if (activeTab !== "planer") {
+    tabQuery = `&fane=${activeTab}`;
+  }
+
+  // Det der står på kortet
+  let cardContent;
+  let centered = true;
+  if (!item) {
+    cardContent = <p className={styles.empty}>{TABS[activeTab].empty}</p>;
+  } else if (activeTab === "planer") {
+    cardContent = <PlanCard plan={item} label={getPlanLabel(item, plans, isToday)} />;
+    centered = false;
+  } else if (activeTab === "noter") {
+    cardContent = <p className={styles.note}>{item.content}</p>;
+  } else {
+    cardContent = (
+      <div className={styles.photo}>
+        <Image src={item.url} alt={item.alt} fill sizes="235px" />
+      </div>
+    );
+  }
+
+  const tabs = [
+    { id: "planer", label: TABS.planer.label, count: plans.length },
+    { id: "noter", label: TABS.noter.label, count: notes.length },
+    { id: "minder", label: TABS.minder.label, count: photos.length },
+  ];
 
   return (
     <main className={styles.page}>
@@ -141,30 +259,10 @@ export default async function DayPage({ searchParams }) {
       </h1>
 
       <section className={styles.sheet}>
-        <DayTabs
-          dateIso={dato}
-          activeTab={activeTab}
-          tabs={[
-            { id: "planer", label: TABS.planer.label, count: plans.length },
-            { id: "noter", label: TABS.noter.label, count: notes.length },
-            { id: "minder", label: TABS.minder.label, count: photos.length },
-          ]}
-        />
+        <DayTabs dateIso={dato} activeTab={activeTab} tabs={tabs} />
 
-        <CardStack more={more} centered={!item || activeTab !== "planer"}>
-          {!item && <p className={styles.empty}>{TABS[activeTab].empty}</p>}
-
-          {item && activeTab === "planer" && (
-            <PlanCard plan={item} label={getPlanLabel(item, plans, dato === toIsoDate(today()))} />
-          )}
-
-          {item && activeTab === "noter" && <p className={styles.note}>{item.content}</p>}
-
-          {item && activeTab === "minder" && (
-            <div className={styles.photo}>
-              <Image src={item.url} alt={item.alt} fill sizes="235px" />
-            </div>
-          )}
+        <CardStack more={more} centered={centered}>
+          {cardContent}
         </CardStack>
       </section>
     </main>

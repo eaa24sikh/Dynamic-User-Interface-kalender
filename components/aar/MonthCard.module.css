@@ -22,7 +22,7 @@
   letter-spacing: -0.375px;
 }
 
-/* Monday to Sunday, like the month view */
+/* Mandag til søndag, ligesom på månedssiden */
 .dots {
   position: absolute;
   top: 29px;
@@ -32,7 +32,7 @@
   gap: 3px 8px;
 }
 
-/* The border moves the content, so the dots are moved back */
+/* Rammen skubber indholdet, så prikkerne flyttes tilbage */
 .current .name {
   top: -9px;
   left: 9px;

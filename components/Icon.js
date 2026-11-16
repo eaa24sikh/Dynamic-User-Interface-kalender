@@ -1,16 +1,30 @@
 import styles from "./Icon.module.css";
 
-// A one-colour SVG drawn in a CSS colour, so it follows the chosen colour scheme.
-// The SVG is used as a mask, which means its own colour doesn't matter.
-export default function Icon({ src, width, height, color = "var(--reminder-tekst)", className }) {
+// Et ikon i én farve, der følger det valgte farvetema.
+// SVG-filen bruges som en "maske" (en stencil), og farven males igennem den.
+// Derfor er det ligegyldigt, hvilken farve SVG-filen selv har.
+//
+//   src    – stien til SVG-filen, fx "/icons/opret/bell.svg"
+//   color  – farven (lilla, hvis den ikke er sat)
+export default function Icon({ src, width, height, color, className }) {
+  let iconColor = "var(--reminder-tekst)";
+  if (color) {
+    iconColor = color;
+  }
+
+  let iconClass = styles.icon;
+  if (className) {
+    iconClass = `${styles.icon} ${className}`;
+  }
+
   return (
     <span
       aria-hidden="true"
-      className={className ? `${styles.icon} ${className}` : styles.icon}
+      className={iconClass}
       style={{
-        width,
-        height,
-        backgroundColor: color,
+        width: width,
+        height: height,
+        backgroundColor: iconColor,
         maskImage: `url(${src})`,
         WebkitMaskImage: `url(${src})`,
       }}
