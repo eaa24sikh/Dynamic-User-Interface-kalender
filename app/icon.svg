@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+  <!-- Calendar page -->
+  <rect x="3" y="5" width="26" height="24" rx="6" fill="#ffffff" stroke="#b02779" stroke-width="2"/>
+  <!-- Top band -->
+  <path d="M4 11V10a4 4 0 0 1 4-4h16a4 4 0 0 1 4 4v1z" fill="#b02779"/>
+  <!-- Rings -->
+  <rect x="9" y="2" width="3" height="7" rx="1.5" fill="#251639"/>
+  <rect x="20" y="2" width="3" height="7" rx="1.5" fill="#251639"/>
+  <!-- Days -->
+  <rect x="8" y="15" width="4" height="4" rx="1" fill="#c0a7eb"/>
+  <rect x="14" y="15" width="4" height="4" rx="1" fill="#8fc5ed"/>
+  <rect x="20" y="15" width="4" height="4" rx="1" fill="#c0a7eb"/>
+  <rect x="8" y="21" width="4" height="4" rx="1" fill="#c0a7eb"/>
+  <rect x="14" y="21" width="4" height="4" rx="1" fill="#d94aa3"/>
+  <rect x="20" y="21" width="4" height="4" rx="1" fill="#c0a7eb"/>
+</svg>

@@ -15,7 +15,7 @@ export default function TopBar({ backHref, backLabel }) {
         <Link href="/indstillinger" className={styles.iconButton} aria-label="Indstillinger">
           <Image src="/icons/settings.svg" alt="" width={28} height={28} />
         </Link>
-        <Link href="/opret" className={styles.iconButton} aria-label="Opret ny">
+        <Link href={`/opret?dato=${dateIso}`} className={styles.iconButton} aria-label="Opret ny">
           <Image src="/icons/plus.svg" alt="" width={24} height={24} />
         </Link>
       </div>

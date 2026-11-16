@@ -1,0 +1,394 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 392px;
+  margin: 0 auto;
+  padding: 27px 30px 60px;
+}
+
+/* Native form controls don't inherit the font by default */
+.page input,
+.page select,
+.page textarea,
+.page button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+
+.page button,
+.page select {
+  cursor: pointer;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  height: 42px;
+  padding: 0 8px 0 5px;
+  font-size: 17px;
+  line-height: 42px;
+  letter-spacing: -0.425px;
+}
+
+.page .cancel {
+  color: var(--reminder-dato);
+}
+
+.page .save {
+  color: var(--maaned-oeverst);
+}
+
+.page .save:disabled {
+  opacity: 0.5;
+}
+
+/* Påmindelse / Note / Begivenhed */
+.segment {
+  display: grid;
+  grid-template-columns: 124fr 90fr 114fr;
+  height: 53px;
+  margin-top: 18px;
+  padding: 4px 5px 5px;
+  border-radius: 20px;
+  background: var(--hvid-baggrund);
+}
+
+.page .segmentButton {
+  border-radius: 20px;
+  color: var(--reminder-dato);
+  font-size: 17px;
+  letter-spacing: -0.425px;
+}
+
+.page .segmentActive {
+  background: var(--dagen-tekst-farve);
+  color: var(--hvid-baggrund);
+}
+
+.card {
+  border-radius: 20px;
+  background: var(--hvid-baggrund);
+}
+
+.titleCard {
+  display: block;
+  margin-top: 28px;
+  padding: 0 20px 7px;
+}
+
+.titleLabel {
+  display: block;
+  margin-bottom: -20px;
+  color: var(--reminder-dato);
+  font-size: 15px;
+  line-height: 42px;
+  letter-spacing: -0.375px;
+}
+
+.page .titleInput {
+  width: 100%;
+  height: 42px;
+  outline: none;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.45px;
+}
+
+/* The white list with dividers */
+.list {
+  margin-top: 28px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--hvid-baggrund);
+}
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  height: 58px;
+  padding: 0 6px;
+}
+
+.row + .row {
+  border-top: 1px solid var(--baggrund);
+}
+
+.spread {
+  justify-content: space-between;
+}
+
+.tight {
+  gap: 8px;
+}
+
+.rowLabel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.rowText {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.interText {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.dateInput {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Time slot pill */
+.page .slot {
+  width: 111px;
+  height: 27px;
+  border-radius: 20px;
+  background: var(--baggrund);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  text-align-last: center;
+  appearance: none;
+}
+
+.page .slotPlain {
+  background: var(--hvid-baggrund);
+}
+
+.page .textInput {
+  flex: 1;
+  min-width: 0;
+  outline: none;
+}
+
+.page .inviteInput {
+  width: 150px;
+  outline: none;
+  color: var(--reminder-dato);
+  text-align: right;
+}
+
+.page .valueSelect {
+  padding-right: 10px;
+  color: var(--reminder-dato);
+  font-size: 15px;
+  font-weight: 500;
+  text-align: right;
+  text-align-last: right;
+  appearance: none;
+}
+
+.textInput::placeholder,
+.inviteInput::placeholder {
+  color: var(--tekst-ved-stickers);
+}
+
+/* Alarm switch */
+.toggle {
+  position: relative;
+  width: 50px;
+  height: 29px;
+}
+
+.toggle input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.track {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--baggrund);
+  border-radius: 10px;
+  background: var(--backgrund-2);
+  pointer-events: none;
+}
+
+.track::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  left: -1px;
+  width: 26px;
+  border: 1px solid var(--baggrund);
+  border-radius: 10px;
+  background: var(--tape);
+  transition: transform 0.2s;
+}
+
+.toggle input:checked + .track {
+  background: var(--baggrund);
+}
+
+.toggle input:checked + .track::after {
+  transform: translateX(24px);
+}
+
+.toggle input:focus-visible + .track {
+  outline: 2px solid var(--dagen-tekst-farve);
+}
+
+/* Gentag */
+.repeat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 58px;
+  margin-top: 18px;
+  padding: 0 6px;
+}
+
+.repeatLabel {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.repeatIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.repeatChoice {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.page .repeatSelect {
+  padding-right: 28px;
+  color: var(--reminder-dato);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 42px;
+  letter-spacing: -0.425px;
+  text-align: right;
+  text-align-last: right;
+  appearance: none;
+}
+
+.arrows {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 24px;
+  height: 42px;
+  pointer-events: none;
+}
+
+.arrowUp,
+.arrowDown {
+  position: absolute;
+  left: 0;
+}
+
+.arrowUp {
+  top: 6px;
+  transform: rotate(90deg);
+}
+
+.arrowDown {
+  top: 15px;
+  transform: rotate(-90deg);
+}
+
+/* Note */
+.noteCard {
+  display: flex;
+  height: 398px;
+  margin-top: 28px;
+  padding: 47px 21px 30px;
+}
+
+.page .noteText {
+  flex: 1;
+  width: 100%;
+  outline: none;
+  font-size: 17px;
+  letter-spacing: -0.425px;
+  resize: none;
+}
+
+.noteText::placeholder {
+  color: var(--tekst-ved-stickers);
+}
+
+/* Stickers */
+.stickers {
+  height: 108px;
+  margin: 28px 0 0;
+  padding: 15px 0 0;
+  border: 0;
+}
+
+.stickersTitle {
+  float: left;
+  margin-left: 18px;
+  padding: 0;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.stickerRow {
+  clear: both;
+  display: flex;
+  justify-content: center;
+  gap: 7.836px;
+  padding-top: 11px;
+}
+
+.sticker {
+  position: relative;
+  width: 44.885px;
+  height: 43.338px;
+  border-radius: 7.739px;
+  background: var(--ikon-kasse);
+  cursor: pointer;
+}
+
+.sticker input {
+  position: absolute;
+  opacity: 0;
+}
+
+.sticker img {
+  position: absolute;
+}
+
+.sticker:has(input:checked) {
+  outline: 2px solid var(--dagen-tekst-farve);
+}
+
+.sticker:has(input:focus-visible) {
+  outline: 2px solid var(--reminder-tekst);
+}
+
+.error {
+  margin-top: 20px;
+  color: var(--dagen-tekst-farve);
+  font-size: 15px;
+  text-align: center;
+}
