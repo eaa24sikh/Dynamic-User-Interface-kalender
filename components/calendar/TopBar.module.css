@@ -21,6 +21,16 @@
   font-weight: 500;
 }
 
+.compact {
+  padding: 0 30px 0 14px;
+}
+
+.compact .back {
+  width: 45px;
+  height: 45px;
+  padding: 0;
+}
+
 .actions {
   display: flex;
   gap: 10px;

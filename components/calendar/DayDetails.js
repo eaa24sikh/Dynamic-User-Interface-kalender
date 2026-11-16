@@ -1,12 +1,13 @@
 import Image from "next/image";
-import { formatLongDate, formatTime } from "@/lib/calendar";
+import Link from "next/link";
+import { formatLongDate, formatTime, toIsoDate } from "@/lib/calendar";
 import styles from "./DayDetails.module.css";
 
 export default function DayDetails({ date, events, notes, reminders }) {
   const isEmpty = events.length === 0 && notes.length === 0 && reminders.length === 0;
 
   return (
-    <section className={styles.card} aria-live="polite">
+    <Link href={`/dag/${toIsoDate(date)}`} className={styles.card}>
       <div className={styles.tape} aria-hidden="true" />
 
       <h2 className={styles.date}>{formatLongDate(date)}</h2>
@@ -39,6 +40,6 @@ export default function DayDetails({ date, events, notes, reminders }) {
       ))}
 
       {isEmpty && <p className={styles.note}>Ingen begivenheder, noter eller påmindelser</p>}
-    </section>
+    </Link>
   );
 }
