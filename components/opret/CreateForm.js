@@ -1,5 +1,8 @@
 "use client";
 
+// "use client" betyder, at formularen kører i browseren.
+// Det skal den, fordi den husker hvad man har valgt (useState), mens man udfylder den.
+
 import { useActionState, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -9,19 +12,36 @@ import Toggle from "@/components/Toggle";
 import { formatShortDate, parseIsoDate } from "@/lib/calendar";
 import styles from "./CreateForm.module.css";
 
+// Knapperne øverst: hvad man vil oprette
 const TYPES = [
   { id: "paamindelse", label: "Påmindelse" },
   { id: "note", label: "Note" },
   { id: "begivenhed", label: "Begivenhed" },
 ];
 
-// "00:00-01:00" … "23:00-00:00" – the value is the start time
-const SLOTS = Array.from({ length: 24 }, (_, hour) => {
-  const start = String(hour).padStart(2, "0");
-  const end = String((hour + 1) % 24).padStart(2, "0");
-  return { value: `${start}:00`, label: `${start}:00-${end}:00` };
-});
+// Et tal med to cifre: 9 -> "09"
+function twoDigits(number) {
+  if (number < 10) {
+    return `0${number}`;
+  }
+  return `${number}`;
+}
 
+// Tidspunkterne man kan vælge: "00:00-01:00" … "23:00-00:00".
+// value er starttidspunktet, fx "14:00".
+const SLOTS = [];
+for (let hour = 0; hour < 24; hour++) {
+  let endHour = hour + 1;
+  if (endHour === 24) {
+    endHour = 0;
+  }
+  SLOTS.push({
+    value: `${twoDigits(hour)}:00`,
+    label: `${twoDigits(hour)}:00-${twoDigits(endHour)}:00`,
+  });
+}
+
+// Valgmulighederne under "Gentag"
 const REPEAT_OPTIONS = [
   { value: "aldrig", label: "Aldrig" },
   { value: "dagligt", label: "Hver dag" },
@@ -30,6 +50,7 @@ const REPEAT_OPTIONS = [
   { value: "aarligt", label: "Hvert år" },
 ];
 
+// Valgmulighederne under "Påmindelse" for en begivenhed (i minutter)
 const REMINDER_OPTIONS = [
   { value: "", label: "Ingen" },
   { value: "15", label: "15 min før" },
@@ -38,7 +59,7 @@ const REMINDER_OPTIONS = [
   { value: "1440", label: "1 dag før" },
 ];
 
-// left/top place each icon inside its tile, as in Figma
+// Stickerne. left og top placerer ikonet i sin kasse, præcis som i Figma.
 const STICKERS = [
   { name: "stjerne", width: 27.086, height: 27.086, left: 8.51, top: 8.51 },
   { name: "blomst", width: 27.8599, height: 27.8597, left: 10.44, top: 8.12 },
@@ -48,8 +69,23 @@ const STICKERS = [
   { name: "taco", width: 27.8598, height: 27.8599, left: 8.12, top: 8.12 },
 ];
 
-// An invisible date input on top of the text, so the whole area opens the date picker
+// Et usynligt datofelt, der ligger oven på teksten "Fre 13. nov".
+// Når man trykker på teksten, åbner telefonens eller browserens egen datovælger.
 function DateInput({ date, onChange }) {
+  function handleChange(event) {
+    // Feltet kan blive tomt, hvis man rydder det – så beholder vi den gamle dato
+    if (event.target.value) {
+      onChange(event.target.value);
+    }
+  }
+
+  function openPicker(event) {
+    // showPicker() findes ikke i alle browsere
+    if (event.currentTarget.showPicker) {
+      event.currentTarget.showPicker();
+    }
+  }
+
   return (
     <input
       type="date"
@@ -57,12 +93,13 @@ function DateInput({ date, onChange }) {
       value={date}
       required
       className={styles.dateInput}
-      onChange={(event) => event.target.value && onChange(event.target.value)}
-      onClick={(event) => event.currentTarget.showPicker?.()}
+      onChange={handleChange}
+      onClick={openPicker}
     />
   );
 }
 
+// Rullemenuen med tidspunkter
 function SlotSelect({ className }) {
   return (
     <select name="slot" defaultValue="09:00" className={className} aria-label="Tidspunkt">
@@ -75,6 +112,7 @@ function SlotSelect({ className }) {
   );
 }
 
+// Felterne når "Påmindelse" er valgt
 function ReminderFields({ date, setDate }) {
   return (
     <>
@@ -122,7 +160,8 @@ function ReminderFields({ date, setDate }) {
   );
 }
 
-// The note is saved on the day you came from (?dato=)
+// Felterne når "Note" er valgt.
+// Noten gemmes på den dag, man kom fra (?dato= i adressen).
 function NoteFields({ date }) {
   return (
     <div className={`${styles.card} ${styles.noteCard}`}>
@@ -132,6 +171,7 @@ function NoteFields({ date }) {
   );
 }
 
+// Felterne når "Begivenhed" er valgt
 function EventFields({ date, setDate }) {
   return (
     <>
@@ -191,15 +231,33 @@ function EventFields({ date, setDate }) {
   );
 }
 
+// Hele formularen på /opret.
+//
+//   initialType – den knap der er valgt fra start, fx "note"
+//   initialDate – den dag der oprettes på, fx "2026-11-13"
 export default function CreateForm({ initialType, initialDate }) {
   const router = useRouter();
+
+  // Hvad man er ved at oprette, og på hvilken dag
   const [type, setType] = useState(initialType);
   const [date, setDate] = useState(initialDate);
+
+  // Når man trykker "Gem", sendes formularen til createItem() i app/opret/actions.js.
+  // state er svaret (fx en fejlbesked), og pending er true, mens der gemmes.
   const [state, formAction, pending] = useActionState(createItem, {});
 
+  // "Annuller" går tilbage til siden før – eller til forsiden, hvis der ikke er nogen
   function cancel() {
-    if (window.history.length > 1) router.back();
-    else router.push("/");
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  }
+
+  let saveText = "Gem";
+  if (pending) {
+    saveText = "Gemmer…";
   }
 
   return (
@@ -211,23 +269,32 @@ export default function CreateForm({ initialType, initialDate }) {
           Annuller
         </button>
         <button type="submit" className={styles.save} disabled={pending}>
-          {pending ? "Gemmer…" : "Gem"}
+          {saveText}
         </button>
       </header>
 
       <div className={styles.segment} role="radiogroup" aria-label="Hvad vil du oprette?">
-        {TYPES.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            role="radio"
-            aria-checked={type === option.id}
-            className={type === option.id ? `${styles.segmentButton} ${styles.segmentActive}` : styles.segmentButton}
-            onClick={() => setType(option.id)}
-          >
-            {option.label}
-          </button>
-        ))}
+        {TYPES.map((option) => {
+          const isActive = type === option.id;
+
+          let buttonClass = styles.segmentButton;
+          if (isActive) {
+            buttonClass = `${styles.segmentButton} ${styles.segmentActive}`;
+          }
+
+          return (
+            <button
+              key={option.id}
+              type="button"
+              role="radio"
+              aria-checked={isActive}
+              className={buttonClass}
+              onClick={() => setType(option.id)}
+            >
+              {option.label}
+            </button>
+          );
+        })}
       </div>
 
       <label className={`${styles.card} ${styles.titleCard}`}>
@@ -235,6 +302,7 @@ export default function CreateForm({ initialType, initialDate }) {
         <input name="title" className={styles.titleInput} autoComplete="off" required />
       </label>
 
+      {/* Felterne skifter alt efter hvad der er valgt øverst */}
       {type === "paamindelse" && <ReminderFields date={date} setDate={setDate} />}
       {type === "note" && <NoteFields date={date} />}
       {type === "begivenhed" && <EventFields date={date} setDate={setDate} />}

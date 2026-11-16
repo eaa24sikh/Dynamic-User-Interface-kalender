@@ -2,9 +2,33 @@ import Image from "next/image";
 import { formatMonthName } from "@/lib/calendar";
 import styles from "./Highlights.module.css";
 
-// stickerMonth: { monthIndex, count } or null
-// busiestWeek: { week, count } or null
-export default function Highlights({ stickerMonth, busiestWeek }) {
+// Boksen "Årets højdepunkter" i årsoversigten.
+//
+//   highlights.stickerMonth – { monthIndex, count } eller null
+//   highlights.busiestWeek  – { week, count } eller null
+//   (de regnes ud i getHighlights() i app/aar/page.js)
+export default function Highlights({ highlights }) {
+  const stickerMonth = highlights.stickerMonth;
+  const busiestWeek = highlights.busiestWeek;
+
+  let stickerText = "Ingen stickers endnu";
+  let stickerValue = "";
+  if (stickerMonth) {
+    stickerText = `Flest stickers i ${formatMonthName(stickerMonth.monthIndex)}`;
+    stickerValue = stickerMonth.count;
+  }
+
+  let weekText = "Ingen planer endnu";
+  let weekValue = "";
+  if (busiestWeek) {
+    weekText = `Travelste uge: ${busiestWeek.week}`;
+    if (busiestWeek.count === 1) {
+      weekValue = "1 plan";
+    } else {
+      weekValue = `${busiestWeek.count} planer`;
+    }
+  }
+
   return (
     <section className={styles.card}>
       <h3 className={styles.title}>Årets højdepunkter</h3>
@@ -12,21 +36,17 @@ export default function Highlights({ stickerMonth, busiestWeek }) {
       <p className={styles.row}>
         <span className={styles.label}>
           <Image src="/icons/aar/hjerte.svg" alt="" width={16.4571} height={16.487} />
-          {stickerMonth ? `Flest stickers i ${formatMonthName(stickerMonth.monthIndex)}` : "Ingen stickers endnu"}
+          {stickerText}
         </span>
-        {stickerMonth && <span className={styles.value}>{stickerMonth.count}</span>}
+        <span className={styles.value}>{stickerValue}</span>
       </p>
 
       <p className={styles.row}>
         <span className={styles.label}>
           <Image src="/icons/sticker-day.svg" alt="" width={18} height={17} />
-          {busiestWeek ? `Travelste uge: ${busiestWeek.week}` : "Ingen planer endnu"}
+          {weekText}
         </span>
-        {busiestWeek && (
-          <span className={styles.value}>
-            {busiestWeek.count} {busiestWeek.count === 1 ? "plan" : "planer"}
-          </span>
-        )}
+        <span className={styles.value}>{weekValue}</span>
       </p>
     </section>
   );

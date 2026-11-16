@@ -1,7 +1,7 @@
 import Image from "next/image";
 import styles from "./StickerTray.module.css";
 
-// left/top place each icon inside its 51.5 × 49.8 tile, as in Figma
+// Stickerne i bjælken. left og top placerer ikonet i sin kasse, præcis som i Figma.
 const STICKERS = [
   { name: "stjerne", width: 31.1111, height: 31.1111, left: 9.78, top: 9.78 },
   { name: "blomst", width: 32.0001, height: 31.9998, left: 12, top: 9.33 },
@@ -11,6 +11,8 @@ const STICKERS = [
   { name: "taco", width: 32, height: 32, left: 9.33, top: 9.33 },
 ];
 
+// Bjælken nederst på månedssiden med stickers.
+// Man kan ikke trække dem ind på en dag endnu – den er kun til at se på.
 export default function StickerTray() {
   return (
     <aside className={styles.tray}>

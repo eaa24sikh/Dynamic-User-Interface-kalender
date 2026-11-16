@@ -1,52 +1,32 @@
-import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
+import { LOGIN_COOKIE } from "@/lib/login";
 
-// Next.js runs proxy.js before every request that matches the matcher.
-// Before Next.js 16 the file was called middleware.js.
-// If the access token has expired, Supabase refreshes the session,
-// and the new cookies are sent to both the page and the browser.
-export async function proxy(request) {
-  let response = NextResponse.next({ request });
+// Next.js kører proxy.js før hver side bliver vist.
+// Den sender folk, der ikke er logget ind, til /login.
+//
+// Man er logget ind, når cookien har samme værdi som LOGIN_SESSION i .env.local
+// (den bliver sat af logIn() i app/login/actions.js).
+export function proxy(request) {
+  const cookie = request.cookies.get(LOGIN_COOKIE);
+  const isLoggedIn = Boolean(cookie && process.env.LOGIN_SESSION && cookie.value === process.env.LOGIN_SESSION);
+  const isLoginPage = request.nextUrl.pathname.startsWith("/login");
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet, headers) {
-          // The page reads the new cookies from the request
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
-          response = NextResponse.next({ request });
+  // Ikke logget ind: send til login-siden
+  if (!isLoggedIn && !isLoginPage) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 
-          // The browser saves the new cookies from the response
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options),
-          );
+  // Allerede logget ind: login-siden er ikke nødvendig
+  if (isLoggedIn && isLoginPage) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
 
-          // A response with a session must never be cached and shown to someone else
-          Object.entries(headers).forEach(([key, value]) =>
-            response.headers.set(key, value),
-          );
-        },
-      },
-    },
-  );
-
-  // Don't write code between createServerClient and getClaims().
-  // getClaims() is what refreshes the session when the access token has expired.
-  await supabase.auth.getClaims();
-
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    // Every path except static files and images
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Alle adresser undtagen Next.js' egne filer og billeder
+    "/((?!_next/static|_next/image|favicon.ico|icon.svg|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

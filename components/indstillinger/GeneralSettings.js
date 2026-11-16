@@ -1,8 +1,9 @@
+import { logOut } from "@/app/login/actions";
 import Icon from "@/components/Icon";
 import Toggle from "@/components/Toggle";
 import styles from "./GeneralSettings.module.css";
 
-// Shows what could be on this page. Nothing here is saved or changes the app.
+// En lille pil, der peger til højre
 function Chevron() {
   return (
     <Icon
@@ -15,6 +16,8 @@ function Chevron() {
   );
 }
 
+// Fanen "Generelt" på /indstillinger.
+// Den viser kun, hvad der kunne være her – intet bliver gemt eller ændrer appen.
 export default function GeneralSettings() {
   return (
     <div className={styles.general}>
@@ -87,6 +90,13 @@ export default function GeneralSettings() {
           <Chevron />
         </div>
       </div>
+
+      {/* Log ud er ikke med i Figma, men man skal kunne logge ud igen */}
+      <form action={logOut}>
+        <button type="submit" className={styles.logout}>
+          Log ud
+        </button>
+      </form>
     </div>
   );
 }

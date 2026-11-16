@@ -1,14 +1,22 @@
 import Link from "next/link";
 import styles from "./CardStack.module.css";
 
-// A card with a second, tilted card behind it.
-// more: { href, label } for the button under the card, or null
-export default function CardStack({ children, more, centered = false }) {
+// Kortet på dagssiden med et skævt kort bag ved.
+//
+//   children – det der står på kortet
+//   more     – { href, label } til knappen under kortet, eller null for ingen knap
+//   centered – true hvis indholdet skal stå i midten af kortet
+export default function CardStack({ children, more, centered }) {
+  let cardClass = styles.card;
+  if (centered) {
+    cardClass = `${styles.card} ${styles.centered}`;
+  }
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.stack}>
         <div className={styles.behind} aria-hidden="true" />
-        <div className={centered ? `${styles.card} ${styles.centered}` : styles.card}>{children}</div>
+        <div className={cardClass}>{children}</div>
       </div>
 
       {more && (

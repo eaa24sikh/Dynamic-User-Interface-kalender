@@ -7,7 +7,7 @@
   background: var(--dage-kasser);
 }
 
-/* Washi tape sticking out over the top edge */
+/* Tape-stykket der stikker op over kanten */
 .tape {
   position: absolute;
   top: -7px;

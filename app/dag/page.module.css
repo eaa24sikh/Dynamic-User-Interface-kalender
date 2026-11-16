@@ -6,7 +6,7 @@
   min-height: 100dvh;
   margin: 0 auto;
   padding-top: 32px;
-  /* Holiday background from /indstillinger, only inside the phone-sized column */
+  /* Højtids-baggrunden fra /indstillinger – kun inden for den mobil-brede kolonne */
   background: var(--tema-billede, none) center top / cover no-repeat;
 }
 
@@ -29,7 +29,7 @@
   isolation: isolate;
 }
 
-/* Yellow highlighter behind the day name */
+/* Gul overstregning bag dagens navn */
 .title span::before {
   content: "";
   position: absolute;
@@ -42,7 +42,7 @@
   transform: rotate(-2.07deg);
 }
 
-/* The white sheet fills the rest of the screen */
+/* Det hvide ark fylder resten af skærmen */
 .sheet {
   flex: 1;
   margin-top: 20px;

@@ -44,7 +44,7 @@
 }
 
 .selected {
-  /* The border is drawn inside, so the number stays in place */
+  /* Rammen tegnes indenfor, så tallet bliver stående samme sted */
   padding: 6px;
   border: 2px solid var(--valgt-dag-kant);
   background: var(--valgt-dag);

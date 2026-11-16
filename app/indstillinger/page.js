@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { BACKGROUND_COOKIE, COLOR_COOKIE, getBackground, getColorScheme } from "@/lib/settings";
+import { BACKGROUND_COOKIE, COLOR_COOKIE, getBackground, getColorScheme, readCookie } from "@/lib/settings";
 import ColorSettings from "@/components/indstillinger/ColorSettings";
 import ThemeSettings from "@/components/indstillinger/ThemeSettings";
 import GeneralSettings from "@/components/indstillinger/GeneralSettings";
@@ -13,14 +13,30 @@ const TABS = [
   { id: "generelt", label: "Generelt" },
 ];
 
-// /indstillinger?fane=temaer – opens on "Farver" without ?fane=
+// Indstillingssiden. Adressen kan være fx /indstillinger?fane=temaer
+// Uden ?fane= åbner den på "Farver".
 export default async function SettingsPage({ searchParams }) {
-  const { fane } = await searchParams;
-  const activeTab = TABS.some((tab) => tab.id === fane) ? fane : "farver";
+  const params = await searchParams;
 
+  let activeTab = "farver";
+  if (params.fane === "temaer" || params.fane === "generelt") {
+    activeTab = params.fane;
+  }
+
+  // Det brugeren allerede har valgt (gemt i cookies)
   const cookieStore = await cookies();
-  const colorScheme = getColorScheme(cookieStore.get(COLOR_COOKIE)?.value);
-  const background = getBackground(cookieStore.get(BACKGROUND_COOKIE)?.value);
+  const colorScheme = getColorScheme(readCookie(cookieStore, COLOR_COOKIE));
+  const background = getBackground(readCookie(cookieStore, BACKGROUND_COOKIE));
+
+  // Indholdet under fanerne
+  let content;
+  if (activeTab === "farver") {
+    content = <ColorSettings activeId={colorScheme.id} />;
+  } else if (activeTab === "temaer") {
+    content = <ThemeSettings activeBackground={background} />;
+  } else {
+    content = <GeneralSettings />;
+  }
 
   return (
     <main className={styles.page}>
@@ -34,22 +50,29 @@ export default async function SettingsPage({ searchParams }) {
       </header>
 
       <nav className={styles.tabs}>
-        {TABS.map((tab) => (
-          <Link
-            key={tab.id}
-            href={`/indstillinger?fane=${tab.id}`}
-            scroll={false}
-            className={tab.id === activeTab ? `${styles.tab} ${styles.activeTab}` : styles.tab}
-            aria-current={tab.id === activeTab ? "page" : undefined}
-          >
-            {tab.label}
-          </Link>
-        ))}
+        {TABS.map((tab) => {
+          const isActive = tab.id === activeTab;
+
+          let className = styles.tab;
+          if (isActive) {
+            className = `${styles.tab} ${styles.activeTab}`;
+          }
+
+          return (
+            <Link
+              key={tab.id}
+              href={`/indstillinger?fane=${tab.id}`}
+              scroll={false}
+              className={className}
+              aria-current={isActive ? "page" : undefined}
+            >
+              {tab.label}
+            </Link>
+          );
+        })}
       </nav>
 
-      {activeTab === "farver" && <ColorSettings activeId={colorScheme.id} />}
-      {activeTab === "temaer" && <ThemeSettings activeBackground={background} />}
-      {activeTab === "generelt" && <GeneralSettings />}
+      {content}
     </main>
   );
 }

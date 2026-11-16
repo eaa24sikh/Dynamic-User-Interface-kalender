@@ -7,7 +7,7 @@
   padding: 27px 30px 60px;
 }
 
-/* Native form controls don't inherit the font by default */
+/* Formularfelter arver ikke skrifttypen af sig selv */
 .page input,
 .page select,
 .page textarea,
@@ -99,7 +99,7 @@
   letter-spacing: -0.45px;
 }
 
-/* The white list with dividers */
+/* Den hvide liste med streger imellem */
 .list {
   margin-top: 28px;
   overflow: hidden;
@@ -154,7 +154,7 @@
   cursor: pointer;
 }
 
-/* Time slot pill */
+/* Den runde knap med tidspunktet */
 .page .slot {
   width: 111px;
   height: 27px;

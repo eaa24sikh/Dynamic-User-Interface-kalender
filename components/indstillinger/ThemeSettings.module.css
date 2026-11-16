@@ -18,7 +18,7 @@
   cursor: pointer;
 }
 
-/* The images have a thin edge from Figma, which is cut off here */
+/* Billederne har en tynd kant fra Figma, som skæres væk her */
 .theme img {
   display: block;
   width: 104px;
@@ -42,7 +42,7 @@
   outline-offset: 2px;
 }
 
-/* The backgrounds for the chosen holiday */
+/* Baggrundene for den valgte højtid */
 .backgrounds {
   display: grid;
   grid-template-columns: repeat(3, 103.3px);

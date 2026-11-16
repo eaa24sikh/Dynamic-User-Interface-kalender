@@ -2,10 +2,19 @@ import Image from "next/image";
 import { formatTime } from "@/lib/calendar";
 import styles from "./PlanCard.module.css";
 
-// plan: an event or a reminder, see getPlans() in app/dag/page.js
+// Indholdet på kortet under fanen "Planer".
+//
+//   plan  – en begivenhed eller påmindelse (se getPlans() i app/dag/page.js)
+//   label – den lille tekst øverst, fx "Næste - om 2 timer" (kan være null)
 export default function PlanCard({ plan, label }) {
   const start = formatTime(plan.start);
   const end = formatTime(plan.end);
+
+  // "14:00 - 16:00", eller kun "14:00" hvis der ikke er et sluttidspunkt
+  let time = start;
+  if (start && end) {
+    time = `${start} - ${end}`;
+  }
 
   return (
     <div className={styles.plan}>
@@ -14,12 +23,12 @@ export default function PlanCard({ plan, label }) {
         <p className={styles.title}>{plan.title}</p>
       </div>
 
-      {(start || plan.location) && (
+      {(time || plan.location) && (
         <div className={styles.details}>
-          {start && (
+          {time && (
             <p className={styles.detail}>
               <Image src="/icons/time.svg" alt="Tidspunkt" width={18} height={18} />
-              {end ? `${start} - ${end}` : start}
+              {time}
             </p>
           )}
           {plan.location && (

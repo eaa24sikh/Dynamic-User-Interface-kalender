@@ -1,4 +1,4 @@
-/* Colors from the Figma file */
+/* Farverne fra Figma. Det er farvetemaet "Scrapbog", som bruges når intet andet er valgt. */
 :root {
   --baggrund: #f0ebfb;
   --overstreg-overskrift: #f7e39b;
@@ -28,11 +28,11 @@
   --aar-inaktiv-dag: #d1c8de;
 }
 
-/* Colour schemes from /indstillinger. "Scrapbog" is the default above.
-   Only the colours that change are listed. */
+/* De andre farvetemaer fra /indstillinger.
+   Kun de farver, der er anderledes end Scrapbog, står her. */
 
-/* Natur: the "Natur" mode of the colour variables in Figma.
-   --maaned-oeverst isn't a variable there, so it is matched to the rest. */
+/* Natur: farvevariablerne i Figma i "Natur"-mode.
+   --maaned-oeverst er ikke en variabel i Figma, så den er valgt, så den passer til resten. */
 :root[data-farve="natur"] {
   --baggrund: #f3f0e6;
   --dagen-tekst-farve: #5b6c47;
@@ -53,8 +53,8 @@
   --aar-inaktiv-dag: #d9ebc7;
 }
 
-/* Elegant: the "Elegant" mode of the colour variables in Figma.
-   --maaned-oeverst isn't a variable there, so it is matched to the rest. */
+/* Elegant: farvevariablerne i Figma i "Elegant"-mode.
+   --maaned-oeverst er ikke en variabel i Figma, så den er valgt, så den passer til resten. */
 :root[data-farve="elegant"] {
   --baggrund: #a6c0e3;
   --dagen-tekst-farve: #600b0b;

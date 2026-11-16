@@ -1,10 +1,14 @@
 /** @type {import('next').NextConfig} */
+
+// Billeder fra Supabase Storage (minder) må vises med <Image>
+const supabaseImages = [];
+if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  supabaseImages.push(new URL(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/sign/**`));
+}
+
 const nextConfig = {
   images: {
-    // Photos from Supabase Storage (signed links to private buckets)
-    remotePatterns: process.env.NEXT_PUBLIC_SUPABASE_URL
-      ? [new URL(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/sign/**`)]
-      : [],
+    remotePatterns: supabaseImages,
   },
 };
 
