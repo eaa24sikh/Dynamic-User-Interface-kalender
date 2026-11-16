@@ -132,7 +132,7 @@ export default async function DayPage({ searchParams }) {
 
   return (
     <main className={styles.page}>
-      <TopBar backHref={`/?dato=${dato}`} />
+      <TopBar backHref={`/?dato=${dato}`} dateIso={dato} />
 
       <WeekStrip date={date} tabQuery={tabQuery} />
 
