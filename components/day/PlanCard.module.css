@@ -1,0 +1,43 @@
+.plan {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 38px 40px 30px;
+  color: var(--aktiv-knap);
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.label {
+  font-size: 12px;
+}
+
+.title {
+  font-size: 15px;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.detail {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 15px;
+}
+
+.location {
+  align-items: flex-start;
+  gap: 13px;
+}
+
+.description {
+  font-size: 13px;
+}

@@ -1,0 +1,48 @@
+/* The front card plus the tilted card sticking out to the right */
+.wrapper {
+  width: 320px;
+  margin: 61px auto 0;
+}
+
+.stack {
+  position: relative;
+  width: 298px;
+}
+
+.behind {
+  position: absolute;
+  inset: 11.6px -11.3px 0.2px 30.6px;
+  border-radius: 18px;
+  background: var(--noter-i-lag);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transform: rotate(4.99deg) skewX(-0.25deg);
+}
+
+.card {
+  position: relative;
+  min-height: 250px;
+  border-radius: 20px;
+  background: var(--baggrund);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.moreRow {
+  display: flex;
+  justify-content: center;
+  width: 298px;
+  margin-top: 37px;
+}
+
+.more {
+  padding: 10px;
+  border-radius: 20px;
+  background: var(--dagen-tekst-farve);
+  color: var(--hvid-baggrund);
+  font-size: 13px;
+}

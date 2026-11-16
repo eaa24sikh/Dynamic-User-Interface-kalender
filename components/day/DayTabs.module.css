@@ -1,0 +1,26 @@
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 81px;
+  height: 31px;
+  border-radius: 20px;
+  background: var(--baggrund);
+  color: var(--aktiv-knap);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18.2px;
+  white-space: nowrap;
+}
+
+.active {
+  background: var(--aktiv-knap);
+  color: var(--hvid-baggrund);
+  font-weight: 400;
+}

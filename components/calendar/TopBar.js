@@ -2,12 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./TopBar.module.css";
 
-export default function TopBar({ year }) {
+// Without backLabel the back button is a small square with only the arrow
+export default function TopBar({ backHref, backLabel }) {
   return (
-    <nav className={styles.topBar}>
-      <Link href="/aar" className={styles.back}>
+    <nav className={backLabel ? styles.topBar : `${styles.topBar} ${styles.compact}`}>
+      <Link href={backHref} className={styles.back} aria-label={backLabel ? undefined : "Tilbage"}>
         <Image src="/icons/chevron-back.svg" alt="" width={27} height={27} />
-        <span>{year}</span>
+        {backLabel && <span>{backLabel}</span>}
       </Link>
 
       <div className={styles.actions}>
