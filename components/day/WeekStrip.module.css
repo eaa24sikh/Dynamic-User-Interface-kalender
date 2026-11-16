@@ -1,0 +1,34 @@
+.strip {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  width: 30px;
+  color: var(--tekstfarve);
+  font-size: 13px;
+  line-height: 18.2px;
+  text-align: center;
+}
+
+.number {
+  font-weight: 800;
+}
+
+.selected {
+  width: 43px;
+  height: 41px;
+  padding-top: 3px;
+  border-radius: 10px;
+  background: var(--aktiv-dag);
+  color: var(--hvid-baggrund);
+}
+
+.selected .number {
+  font-weight: 400;
+}
