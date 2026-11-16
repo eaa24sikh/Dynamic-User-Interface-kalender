@@ -7,7 +7,6 @@ import StickerTray from "@/components/calendar/StickerTray";
 import styles from "./page.module.css";
 
 // Fetches events, notes and reminders for every day shown in the grid.
-// Row Level Security makes sure each user only gets their own rows.
 async function getCalendarData(start, end) {
   const supabase = await createClient();
 

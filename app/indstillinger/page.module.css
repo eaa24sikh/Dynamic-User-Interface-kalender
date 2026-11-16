@@ -1,0 +1,86 @@
+.page {
+  width: 100%;
+  max-width: 392px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 32px 0 60px;
+  /* Holiday background from /indstillinger, only inside the phone-sized column */
+  background: var(--tema-billede, none) center top / cover no-repeat;
+}
+
+.header {
+  display: flex;
+  align-items: flex-end;
+  gap: 39px;
+  padding: 0 33px;
+}
+
+.back {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: var(--dage-kasser);
+}
+
+.title {
+  margin: 0;
+  color: var(--dagen-tekst-farve);
+  font-family: var(--font-fraunces), serif;
+  font-size: 35px;
+  font-style: italic;
+  font-weight: 900;
+  line-height: 42px;
+  letter-spacing: -0.875px;
+  font-variation-settings: "SOFT" 0, "WONK" 1;
+}
+
+.title span {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  padding: 2px 5px 1px;
+}
+
+/* Yellow highlighter behind the title */
+.title span::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 4px;
+  right: 0;
+  left: 0;
+  height: 37px;
+  background: var(--overstreg-overskrift);
+  transform: rotate(-2.07deg);
+}
+
+/* Farver / Temaer / Generelt */
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  height: 45px;
+  margin: 35px 33px 0;
+  padding: 4px 5px;
+  border-radius: 20px;
+  background: var(--backgrund-2);
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  color: var(--tekstfarve);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.425px;
+}
+
+.activeTab {
+  background: var(--aktiv-dag);
+  color: var(--hvid-baggrund);
+}

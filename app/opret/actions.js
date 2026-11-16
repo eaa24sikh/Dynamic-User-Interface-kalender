@@ -30,8 +30,6 @@ export async function createItem(prevState, formData) {
   if (!parseIsoDate(date)) return { error: "Vælg en dag" };
 
   const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getClaims();
-  if (!auth?.claims) return { error: "Du skal være logget ind for at gemme" };
 
   let result;
   let tab = "planer";

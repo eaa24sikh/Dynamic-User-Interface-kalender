@@ -1,0 +1,46 @@
+.toggle {
+  position: relative;
+  width: 50px;
+  height: 29px;
+}
+
+.toggle input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.track {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--baggrund);
+  border-radius: 10px;
+  background: var(--backgrund-2);
+  pointer-events: none;
+}
+
+.track::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  left: -1px;
+  width: 26px;
+  border: 1px solid var(--baggrund);
+  border-radius: 10px;
+  background: var(--tape);
+  transition: transform 0.2s;
+}
+
+.toggle input:checked + .track {
+  background: var(--baggrund);
+}
+
+.toggle input:checked + .track::after {
+  transform: translateX(24px);
+}
+
+.toggle input:focus-visible + .track {
+  outline: 2px solid var(--dagen-tekst-farve);
+}

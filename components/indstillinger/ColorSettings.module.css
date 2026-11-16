@@ -1,0 +1,133 @@
+.preview {
+  margin: 50px 19px 0;
+  padding: 14px 16px 30px;
+  border: 1px solid var(--tape);
+  border-radius: 20px;
+  background: var(--baggrund);
+}
+
+.previewHeader {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0 0 6px;
+}
+
+.previewMonth {
+  color: var(--maaned-oeverst);
+  font-family: var(--font-fraunces), serif;
+  font-size: 25px;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 42px;
+  letter-spacing: -0.625px;
+  font-variation-settings: "SOFT" 0, "WONK" 1;
+}
+
+.previewHint {
+  padding-right: 8px;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 42px;
+  letter-spacing: -0.325px;
+}
+
+.previewWeek {
+  display: flex;
+  gap: 6.55px;
+  margin-top: 5.5px;
+}
+
+.previewWeek:first-of-type {
+  margin-top: 4px;
+}
+
+.previewDay {
+  width: 40.4px;
+  height: 32.8px;
+  padding: 0 6px;
+  border-radius: 10.9px;
+  background: var(--dage-kasser);
+  font-size: 13px;
+  font-style: italic;
+  line-height: 24px;
+  letter-spacing: -0.325px;
+}
+
+.previewEvent {
+  background: var(--personlig-begivenhed);
+  color: var(--dage-kasser);
+}
+
+.previewSelected {
+  background: var(--aktiv-dag);
+  color: var(--hvid-baggrund);
+}
+
+.heading {
+  margin: 17px 28px 0;
+  color: var(--reminder-dato);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 42px;
+  letter-spacing: -0.425px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0 19px;
+}
+
+.option {
+  padding: 12px 24px 12px 23px;
+  border: 1px solid var(--tape);
+  border-radius: 20px;
+  background: var(--baggrund);
+}
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  width: 100%;
+  height: 96px;
+  padding: 10px 0 0 24px;
+  border: 2px solid var(--baggrund);
+  border-radius: 20px;
+  background: var(--dage-kasser);
+  color: var(--tekstfarve);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.active {
+  border-color: var(--aktiv-dag);
+}
+
+.choice:focus-visible {
+  outline: 2px solid var(--dagen-tekst-farve);
+  outline-offset: 2px;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  margin-top: -6px;
+}
+
+.name {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 42px;
+  letter-spacing: -0.425px;
+}
+
+.description {
+  max-width: 120px;
+  margin-top: -7px;
+  color: var(--reminder-dato);
+  font-size: 15px;
+  letter-spacing: -0.375px;
+}

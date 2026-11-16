@@ -6,6 +6,8 @@
   min-height: 100dvh;
   margin: 0 auto;
   padding-top: 32px;
+  /* Holiday background from /indstillinger, only inside the phone-sized column */
+  background: var(--tema-billede, none) center top / cover no-repeat;
 }
 
 .title {

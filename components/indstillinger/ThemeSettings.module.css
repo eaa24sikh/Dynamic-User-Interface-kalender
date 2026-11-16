@@ -1,0 +1,76 @@
+/* Jul / Valentine / Påske / Halloween */
+.themes {
+  display: grid;
+  grid-template-columns: repeat(2, 104px);
+  gap: 10px;
+  justify-content: center;
+  margin-top: 72px;
+}
+
+.theme {
+  position: relative;
+  width: 104px;
+  height: 58px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  cursor: pointer;
+}
+
+/* The images have a thin edge from Figma, which is cut off here */
+.theme img {
+  display: block;
+  width: 104px;
+  height: 58px;
+  object-fit: cover;
+  clip-path: inset(1px round 9px);
+}
+
+.selected::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid #a62b2b;
+  border-radius: 10px;
+  background: url(/temaer/valgt.svg) no-repeat right 7px top 5px / 8px 8px;
+}
+
+.theme:focus-visible,
+.background:focus-visible {
+  outline: 2px solid var(--dagen-tekst-farve);
+  outline-offset: 2px;
+}
+
+/* The backgrounds for the chosen holiday */
+.backgrounds {
+  display: grid;
+  grid-template-columns: repeat(3, 103.3px);
+  gap: 18px 17px;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.background {
+  display: block;
+  width: 103.3px;
+  height: 224.8px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+
+.background img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.active {
+  outline: 3px solid var(--aktiv-dag);
+  outline-offset: 2px;
+}

@@ -22,6 +22,49 @@
   --noter-i-lag: #fff3e8;
 }
 
+/* Colour schemes from /indstillinger. "Scrapbog" is the default above.
+   Only the colours that change are listed. */
+
+/* Natur: the "Natur" mode of the colour variables in Figma.
+   --maaned-oeverst and --reminder-dato aren't variables there, so they are matched to the rest. */
+:root[data-farve="natur"] {
+  --baggrund: #f3f0e6;
+  --dagen-tekst-farve: #5b6c47;
+  --maaned-oeverst: #5b6c47;
+  --dagene: #46513d;
+  --weekend-tal: #7e8771;
+  --dage-kasser: #fffdf7;
+  --aktiv-dag: #a8b99a;
+  --aktiv-knap: #526143;
+  --tape: #68775a;
+  --prik-ud-fra-reminder: #526143;
+  --reminder-tekst: #5b6c47;
+  --vaelg-farvetema: #657253;
+  --reminder-dato: #66705a;
+  --ikon-kasse: #f0efe8;
+  --noter-i-lag: #eee8d8;
+}
+
+/* Elegant: the "Elegant" mode of the colour variables in Figma.
+   --maaned-oeverst and --reminder-dato aren't variables there, so they are matched to the rest. */
+:root[data-farve="elegant"] {
+  --baggrund: #a6c0e3;
+  --dagen-tekst-farve: #600b0b;
+  --maaned-oeverst: #600b0b;
+  --dagene: #581410;
+  --weekend-tal: #7f7f7f;
+  --personlig-begivenhed: #64bdff;
+  --aktiv-dag: #581410;
+  --aktiv-knap: #581410;
+  --tape: #600b0b;
+  --prik-ud-fra-reminder: #600b0b;
+  --reminder-tekst: #581511;
+  --vaelg-farvetema: #655b73;
+  --reminder-dato: #6b3a37;
+  --ikon-kasse: #f5f3ed;
+  --noter-i-lag: #fdf3e9;
+}
+
 *,
 *::before,
 *::after {
