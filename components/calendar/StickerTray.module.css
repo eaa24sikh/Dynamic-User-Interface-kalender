@@ -1,0 +1,47 @@
+.tray {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  max-width: 392px;
+  padding: 10px 10px calc(20px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  border-radius: 19px 19px 0 0;
+  background: var(--dage-kasser);
+}
+
+.handle {
+  width: 43.5px;
+  height: 5.333px;
+  margin: 0 auto 10px;
+  border-radius: 8.889px;
+  background: var(--tekst-ved-stickers);
+}
+
+.hint {
+  padding: 10px;
+  color: var(--tekst-ved-stickers);
+  font-size: 15.111px;
+  line-height: 22.4px;
+}
+
+.stickers {
+  display: flex;
+  justify-content: center;
+  gap: 9px;
+  margin: 9px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tile {
+  position: relative;
+  width: 51.556px;
+  height: 49.778px;
+  border-radius: 8.889px;
+  background: var(--ikon-kasse);
+}
+
+.tile img {
+  position: absolute;
+}

@@ -1,25 +1,32 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Inter, Nunito } from "next/font/google";
 import Header from "@/components/Header";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  style: "italic",
+  axes: ["SOFT", "WONK"],
+});
+
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
 export const metadata = {
-  title: "Supabase Auth",
-  description: "A Next.js app with sign up, log in and a protected profile page using Supabase Auth",
+  title: "Kalender",
+  description: "Overblik over måneden med begivenheder, noter og påmindelser",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="da" className={`${fraunces.variable} ${nunito.variable} ${inter.variable}`}>
       <body>
         <Header />
         {children}

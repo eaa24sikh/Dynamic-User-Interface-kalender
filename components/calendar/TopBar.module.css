@@ -1,0 +1,37 @@
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 30px 0 22px;
+}
+
+.back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 83px;
+  height: 48px;
+  padding: 0 14px 0 8px;
+  border-radius: 12px;
+  background: var(--dage-kasser);
+  color: var(--tekstfarve);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: var(--dage-kasser);
+}

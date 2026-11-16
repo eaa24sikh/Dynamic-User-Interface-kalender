@@ -1,0 +1,52 @@
+.weekdays {
+  display: flex;
+  justify-content: space-between;
+  height: 19px;
+  margin-bottom: 11px;
+  padding: 0 10px;
+  color: var(--dagene);
+  font-size: 13px;
+  line-height: 18.2px;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 5px;
+}
+
+.week {
+  display: flex;
+  gap: 4px;
+}
+
+.day {
+  flex: 1 0 0;
+  min-width: 0;
+  height: 54px;
+  padding: 8px;
+  border-radius: 13px;
+  background: var(--dage-kasser);
+  color: var(--tekstfarve);
+  font-size: 14px;
+  line-height: 19.6px;
+}
+
+.outside {
+  background: transparent;
+  color: var(--weekend-tal);
+}
+
+.hasEvent {
+  background: var(--personlig-begivenhed);
+  color: var(--dage-kasser);
+}
+
+.selected {
+  /* The border is drawn inside, so the number stays in place */
+  padding: 6px;
+  border: 2px solid var(--valgt-dag-kant);
+  background: var(--valgt-dag);
+  font-weight: 700;
+}

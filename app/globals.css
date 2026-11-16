@@ -1,0 +1,46 @@
+/* Colors from the Figma file */
+:root {
+  --baggrund: #f0ebfb;
+  --overstreg-overskrift: #f7e39b;
+  --dagen-tekst-farve: #b02779;
+  --dagene: #251639;
+  --weekend-tal: #85858b;
+  --tekstfarve: #000000;
+  --dage-kasser: #ffffff;
+  --personlig-begivenhed: #8fc5ed;
+  --valgt-dag: #f8e8f3;
+  --valgt-dag-kant: #d742a1;
+  --tape: #c0a7eb;
+  --prik-ud-fra-reminder: #5a3ec1;
+  --reminder-tekst: #8251fe;
+  --vaelg-farvetema: #554b63;
+  --tekst-ved-stickers: #857f8d;
+  --ikon-kasse: #f4f4f4;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--baggrund);
+  color: var(--tekstfarve);
+  font-family: var(--font-nunito), sans-serif;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

@@ -1,0 +1,55 @@
+.card {
+  position: relative;
+  margin: 30px 6px 0;
+  padding: 14px 20px 10px;
+  border-radius: 24px;
+  background: var(--dage-kasser);
+}
+
+/* Washi tape sticking out over the top edge */
+.tape {
+  position: absolute;
+  top: -7px;
+  left: 21px;
+  width: 77px;
+  height: 17.4px;
+  background: var(--tape);
+  transform: rotate(-5.46deg) skewX(0.97deg);
+}
+
+.date {
+  margin: 0;
+  color: var(--prik-ud-fra-reminder);
+  font-size: 14.545px;
+  font-weight: 400;
+  line-height: 27.152px;
+}
+
+.reminder {
+  color: var(--reminder-tekst);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 27.152px;
+}
+
+.events {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.event {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: var(--vaelg-farvetema);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 15.758px;
+  line-height: 27.152px;
+}
+
+.note {
+  color: var(--vaelg-farvetema);
+  font-size: 15px;
+  line-height: 22px;
+}
