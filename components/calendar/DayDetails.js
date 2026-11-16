@@ -7,7 +7,7 @@ export default function DayDetails({ date, events, notes, reminders }) {
   const isEmpty = events.length === 0 && notes.length === 0 && reminders.length === 0;
 
   return (
-    <Link href={`/dag/${toIsoDate(date)}`} className={styles.card}>
+    <Link href={`/dag?dato=${toIsoDate(date)}`} className={styles.card}>
       <div className={styles.tape} aria-hidden="true" />
 
       <h2 className={styles.date}>{formatLongDate(date)}</h2>

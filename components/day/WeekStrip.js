@@ -2,7 +2,7 @@ import Link from "next/link";
 import { formatLongDate, formatShortWeekday, getWeekStrip, toIsoDate } from "@/lib/calendar";
 import styles from "./WeekStrip.module.css";
 
-// tabQuery keeps the open tab when you move to another day, e.g. "?fane=noter"
+// tabQuery keeps the open tab when you move to another day, e.g. "&fane=noter"
 export default function WeekStrip({ date, tabQuery }) {
   const selectedIso = toIsoDate(date);
 
@@ -13,7 +13,7 @@ export default function WeekStrip({ date, tabQuery }) {
         return (
           <Link
             key={day.iso}
-            href={`/dag/${day.iso}${tabQuery}`}
+            href={`/dag?dato=${day.iso}${tabQuery}`}
             scroll={false}
             className={isSelected ? `${styles.day} ${styles.selected}` : styles.day}
             aria-label={formatLongDate(day.date)}
