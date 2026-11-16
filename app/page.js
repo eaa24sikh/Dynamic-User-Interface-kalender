@@ -54,7 +54,7 @@ export default async function Home({ searchParams }) {
 
   return (
     <main className={styles.page}>
-      <TopBar backHref="/aar" backLabel={selected.getUTCFullYear()} dateIso={selectedIso} />
+      <TopBar backHref="/aar" backLabel={selected.getUTCFullYear()} />
 
       <h1 className={styles.month}>
         <span>{formatMonth(selected)}</span>
