@@ -44,11 +44,10 @@ function getText(formData, name) {
 // Går det galt, gives en fejlbesked tilbage, som formularen viser.
 //
 // Hvor det bliver gemt:
-//   Påmindelse – en række i "reminders" med dato og tidspunkt
+//   Påmindelse – en række i "reminders" med dato og tidspunkt (remind_at)
 //   Note       – en række i "event_notes" med dato
-//   Begivenhed – en række i "events". "Påmindelse før" bliver en række i "reminders",
-//                og en sticker bliver en række i "day_stickers".
-//                "Inviter venner" bliver ikke gemt.
+//   Begivenhed – en række i "events". "Påmindelse før", "Inviter venner" og stickeren
+//                gemmes i kolonnerne reminder, friends og stickers.
 export async function createItem(previousState, formData) {
   const type = formData.get("type");
   const title = getText(formData, "title");
@@ -62,12 +61,6 @@ export async function createItem(previousState, formData) {
     return { error: "Vælg en dag" };
   }
 
-  // Alt gemmes i appens kalender
-  const calendarId = await getCalendarId();
-  if (!calendarId) {
-    return { error: "Det kunne ikke gemmes. Prøv igen." };
-  }
-
   const supabase = createClient();
   let result;
   let tab;
@@ -77,11 +70,10 @@ export async function createItem(previousState, formData) {
       return { error: "Vælg et tidspunkt" };
     }
 
+    // Klokkeslættet gemmes i remind_at sammen med datoen
     result = await supabase.from("reminders").insert({
-      calendar_id: calendarId,
       title: title,
       date: date,
-      time: slot,
       remind_at: toDatabaseTimestamp(date, slot),
       alarm: formData.get("alarm") === "on",
       repeat: formData.get("repeat"),
@@ -94,7 +86,6 @@ export async function createItem(previousState, formData) {
     }
 
     result = await supabase.from("event_notes").insert({
-      calendar_id: calendarId,
       title: title,
       date: date,
       content: content,
@@ -105,24 +96,30 @@ export async function createItem(previousState, formData) {
       return { error: "Vælg et tidspunkt" };
     }
 
-    // .select().single() giver os den nye begivenhed tilbage, så vi kender dens id og starttid
-    result = await supabase
-      .from("events")
-      .insert({
-        calendar_id: calendarId,
-        title: title,
-        location: getText(formData, "location"),
-        start_at: toDatabaseTimestamp(date, slot),
-        end_at: toDatabaseTimestamp(date, slotEnd(slot)),
-        all_day: false,
-        timezone: "Europe/Copenhagen",
-      })
-      .select("id, start_at")
-      .single();
-
-    if (!result.error) {
-      await saveEventExtras(supabase, formData, calendarId, date, result.data);
+    // Begivenheden gemmes i appens kalender
+    const calendarId = await getCalendarId();
+    if (!calendarId) {
+      return { error: "Det kunne ikke gemmes. Prøv igen." };
     }
+
+    // "Påmindelse før" er et antal minutter, fx 60. "Ingen" er tom og gemmes som null.
+    let reminder = null;
+    const minutesBefore = Number(formData.get("reminder"));
+    if (minutesBefore > 0) {
+      reminder = minutesBefore;
+    }
+
+    result = await supabase.from("events").insert({
+      calendar_id: calendarId,
+      title: title,
+      location: getText(formData, "location"),
+      start_at: toDatabaseTimestamp(date, slot),
+      end_at: toDatabaseTimestamp(date, slotEnd(slot)),
+      all_day: false,
+      reminder: reminder,
+      friends: getText(formData, "invitees"),
+      stickers: getText(formData, "sticker"),
+    });
     tab = "planer";
   } else {
     return { error: "Vælg hvad du vil oprette" };
@@ -134,35 +131,4 @@ export async function createItem(previousState, formData) {
   }
 
   redirect(`/dag?dato=${date}&fane=${tab}`);
-}
-
-// Gemmer "Påmindelse før" og stickeren for en ny begivenhed.
-// Går det galt, skrives det kun i terminalen – selve begivenheden er jo gemt.
-async function saveEventExtras(supabase, formData, calendarId, date, event) {
-  // "Påmindelse før" er et antal minutter, fx 60. "Ingen" er tom.
-  const minutesBefore = Number(formData.get("reminder"));
-  if (minutesBefore > 0) {
-    const startTime = new Date(event.start_at).getTime();
-    const remindAt = new Date(startTime - minutesBefore * 60 * 1000);
-
-    const reminderResult = await supabase.from("reminders").insert({
-      event_id: event.id,
-      remind_at: remindAt.toISOString(),
-    });
-    if (reminderResult.error) {
-      console.error(`Kunne ikke gemme påmindelsen: ${reminderResult.error.message}`);
-    }
-  }
-
-  const sticker = getText(formData, "sticker");
-  if (sticker) {
-    const stickerResult = await supabase.from("day_stickers").insert({
-      calendar_id: calendarId,
-      date: date,
-      sticker: sticker,
-    });
-    if (stickerResult.error) {
-      console.error(`Kunne ikke gemme stickeren: ${stickerResult.error.message}`);
-    }
-  }
 }
