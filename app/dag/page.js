@@ -72,7 +72,6 @@ function getPlans(events, reminders) {
       start: event.start_time,
       end: event.end_time,
       location: event.location,
-      description: event.description,
     });
   }
 
