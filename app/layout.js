@@ -1,6 +1,5 @@
 import { Fraunces, Inter, Nunito } from "next/font/google";
 import { cookies } from "next/headers";
-import Header from "@/components/Header";
 import { BACKGROUND_COOKIE, COLOR_COOKIE, getBackground, getColorScheme, readCookie } from "@/lib/settings";
 import "./globals.css";
 
@@ -50,7 +49,6 @@ export default async function RootLayout({ children }) {
       style={style}
     >
       <body>
-        <Header />
         {children}
       </body>
     </html>
