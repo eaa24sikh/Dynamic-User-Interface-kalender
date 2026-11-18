@@ -22,6 +22,8 @@
 }
 
 .day {
+  /* relative: så stickeren kan placeres i hjørnet af dagen */
+  position: relative;
   flex: 1 0 0;
   min-width: 0;
   height: 54px;
@@ -49,4 +51,11 @@
   border: 2px solid var(--valgt-dag-kant);
   background: var(--valgt-dag);
   font-weight: 700;
+}
+
+/* Stickeren nederst til højre på dagen */
+.sticker {
+  position: absolute;
+  right: 3px;
+  bottom: 4px;
 }

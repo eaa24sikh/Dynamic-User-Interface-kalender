@@ -1,4 +1,4 @@
-import { getEvents, getNotes, getReminders } from "@/lib/supabase/server";
+import { getDayStickers, getEvents, getNotes, getReminders } from "@/lib/supabase/server";
 import { formatMonth, getMonthGrid, parseIsoDate, toIsoDate, today } from "@/lib/calendar";
 import TopBar from "@/components/calendar/TopBar";
 import MonthGrid from "@/components/calendar/MonthGrid";
@@ -25,6 +25,7 @@ export default async function Home({ searchParams }) {
   const events = await getEvents(grid.start, grid.end);
   const notes = await getNotes(grid.start, grid.end);
   const reminders = await getReminders(grid.start, grid.end);
+  const stickers = await getDayStickers(grid.start, grid.end);
 
   // Kortet under kalenderen viser kun det, der sker på den valgte dag
   const eventsOnDay = events.filter((event) => event.date === selectedIso);
@@ -39,7 +40,7 @@ export default async function Home({ searchParams }) {
         <span>{formatMonth(selected)}</span>
       </h1>
 
-      <MonthGrid weeks={grid.weeks} selectedIso={selectedIso} events={events} />
+      <MonthGrid weeks={grid.weeks} selectedIso={selectedIso} events={events} stickers={stickers} />
 
       <DayDetails date={selected} events={eventsOnDay} notes={notesOnDay} reminders={remindersOnDay} />
 

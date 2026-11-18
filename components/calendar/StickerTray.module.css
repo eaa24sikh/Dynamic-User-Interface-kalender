@@ -40,8 +40,20 @@
   height: 49.778px;
   border-radius: 8.889px;
   background: var(--ikon-kasse);
+  /* Siden må ikke scrolle, når man trækker i en sticker */
+  touch-action: none;
+  cursor: grab;
 }
 
 .tile img {
   position: absolute;
+}
+
+/* Kopien der følger fingeren. Midten af stickeren sidder under fingeren.
+   pointer-events: none gør, at vi kan "se igennem" den og finde dagen nedenunder. */
+.dragged {
+  position: fixed;
+  z-index: 10;
+  transform: translate(-50%, -50%) scale(1.2);
+  pointer-events: none;
 }
