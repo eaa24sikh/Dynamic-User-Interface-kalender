@@ -1,11 +1,15 @@
+import Image from "next/image";
 import Link from "next/link";
 import { WEEKDAY_LABELS, formatLongDate } from "@/lib/calendar";
 import styles from "./MonthGrid.module.css";
 
 // Teksten skærmlæseren læser op for en dag, fx
 // "tirsdag 17. november, 2 begivenheder: Tandlæge, Fødselsdag"
-function dayLabel(date, eventsOnDay) {
-  const dateText = formatLongDate(date);
+function dayLabel(date, eventsOnDay, sticker) {
+  let dateText = formatLongDate(date);
+  if (sticker) {
+    dateText = `${dateText}, sticker: ${sticker}`;
+  }
 
   if (eventsOnDay.length === 0) {
     return dateText;
@@ -29,7 +33,8 @@ function dayLabel(date, eventsOnDay) {
 //   weeks       – ugerne fra getMonthGrid() i lib/calendar.js
 //   selectedIso – den valgte dag, fx "2026-11-09"
 //   events      – begivenhederne fra getEvents() for de dage, der vises
-export default function MonthGrid({ weeks, selectedIso, events }) {
+//   stickers    – stickerne fra getDayStickers(), fx [{ date: "2026-11-10", sticker: "stjerne" }]
+export default function MonthGrid({ weeks, selectedIso, events, stickers }) {
   return (
     <div>
       <div className={styles.weekdays}>
@@ -44,6 +49,14 @@ export default function MonthGrid({ weeks, selectedIso, events }) {
             {week.map((day) => {
               const isSelected = day.iso === selectedIso;
               const eventsOnDay = events.filter((event) => event.date === day.iso);
+
+              // Stickeren på dagen (null hvis der ikke er nogen)
+              let sticker = null;
+              for (const row of stickers) {
+                if (row.date === day.iso) {
+                  sticker = row.sticker;
+                }
+              }
 
               // Grå for dage i måneden før/efter, lyserød ramme for den valgte dag,
               // blå for dage med en begivenhed – ellers hvid
@@ -61,10 +74,20 @@ export default function MonthGrid({ weeks, selectedIso, events }) {
                   key={day.iso}
                   href={`/dag?dato=${day.iso}`}
                   className={dayClass}
-                  aria-label={dayLabel(day.date, eventsOnDay)}
+                  aria-label={dayLabel(day.date, eventsOnDay, sticker)}
                   aria-current={isSelected ? "date" : undefined}
+                  data-dato={day.iso}
                 >
                   {day.date.getUTCDate()}
+                  {sticker && (
+                    <Image
+                      src={`/icons/sticker-${sticker}.svg`}
+                      alt=""
+                      width={19}
+                      height={19}
+                      className={styles.sticker}
+                    />
+                  )}
                 </Link>
               );
             })}
