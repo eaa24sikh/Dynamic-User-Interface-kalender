@@ -106,6 +106,9 @@ export default async function YearPage({ searchParams }) {
     <main className={styles.page}>
       <TopBar backHref="/" dateIso={todayIso} />
 
+      {/* Overskrift til skærmlæsere. Se .skjult i app/globals.css */}
+      <h1 className="skjult">Årsoversigt</h1>
+
       {years.map((year) => (
         <section key={year} className={styles.year} aria-label={String(year)}>
           <h2 className={styles.title}>

@@ -260,9 +260,20 @@ export default function CreateForm({ initialType, initialDate }) {
     saveText = "Gemmer…";
   }
 
+  // Overskriften følger det valgte, fx "Opret note"
+  let headingText = "Opret påmindelse";
+  if (type === "note") {
+    headingText = "Opret note";
+  } else if (type === "begivenhed") {
+    headingText = "Opret begivenhed";
+  }
+
   return (
     <form action={formAction} className={styles.page}>
       <input type="hidden" name="type" value={type} />
+
+      {/* Overskrift til skærmlæsere. Se .skjult i app/globals.css */}
+      <h1 className="skjult">{headingText}</h1>
 
       <header className={styles.header}>
         <button type="button" className={styles.cancel} onClick={cancel}>

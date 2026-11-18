@@ -101,3 +101,17 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+/* Tekst der kun er til skærmlæsere. Den fylder ikke noget og kan ikke ses,
+   men skærmlæseren læser den stadig op. Brug: className="skjult" */
+.skjult {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
