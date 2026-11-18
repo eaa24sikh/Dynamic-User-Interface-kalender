@@ -26,12 +26,6 @@ export default async function Home({ searchParams }) {
   const notes = await getNotes(grid.start, grid.end);
   const reminders = await getReminders(grid.start, grid.end);
 
-  // Dage med mindst én begivenhed bliver farvet blå i kalenderen
-  const eventDates = [];
-  for (const event of events) {
-    eventDates.push(event.date);
-  }
-
   // Kortet under kalenderen viser kun det, der sker på den valgte dag
   const eventsOnDay = events.filter((event) => event.date === selectedIso);
   const notesOnDay = notes.filter((note) => note.date === selectedIso);
@@ -45,7 +39,7 @@ export default async function Home({ searchParams }) {
         <span>{formatMonth(selected)}</span>
       </h1>
 
-      <MonthGrid weeks={grid.weeks} selectedIso={selectedIso} eventDates={eventDates} />
+      <MonthGrid weeks={grid.weeks} selectedIso={selectedIso} events={events} />
 
       <DayDetails date={selected} events={eventsOnDay} notes={notesOnDay} reminders={remindersOnDay} />
 
