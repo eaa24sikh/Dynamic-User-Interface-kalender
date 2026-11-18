@@ -1,0 +1,23 @@
+/* Skraldespand og blyant nederst til venstre på det hvide ark */
+.actions {
+  position: absolute;
+  bottom: 9px;
+  left: 9px;
+  display: flex;
+  gap: 8px;
+}
+
+/* Den runde knap med en svag kant */
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(133, 133, 139, 0.1);
+  border-radius: 20px;
+  background: var(--dage-kasser);
+  cursor: pointer;
+}

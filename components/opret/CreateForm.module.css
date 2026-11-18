@@ -65,6 +65,11 @@
   letter-spacing: -0.425px;
 }
 
+/* Når man redigerer, kan man ikke skifte til en anden type */
+.page .segmentButton:disabled {
+  cursor: default;
+}
+
 .page .segmentActive {
   background: var(--dagen-tekst-farve);
   color: var(--hvid-baggrund);

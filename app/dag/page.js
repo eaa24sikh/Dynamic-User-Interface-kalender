@@ -7,6 +7,7 @@ import WeekStrip from "@/components/day/WeekStrip";
 import DayTabs from "@/components/day/DayTabs";
 import CardStack from "@/components/day/CardStack";
 import PlanCard from "@/components/day/PlanCard";
+import DayActions from "@/components/day/DayActions";
 import styles from "./page.module.css";
 
 // Teksterne til de tre faner
@@ -67,6 +68,7 @@ function getPlans(events, reminders) {
   for (const event of events) {
     plans.push({
       id: `event-${event.id}`,
+      dbId: event.id,
       isEvent: true,
       title: event.title,
       start: event.start_time,
@@ -78,6 +80,7 @@ function getPlans(events, reminders) {
   for (const reminder of reminders) {
     plans.push({
       id: `reminder-${reminder.id}`,
+      dbId: reminder.id,
       isEvent: false,
       title: `Husk: ${reminder.title}`,
       start: reminder.time,
@@ -241,6 +244,19 @@ export default async function DayPage({ searchParams }) {
     );
   }
 
+  // Skraldespanden og blyanten virker på det kort, der vises.
+  // Billeder (minder) kan ikke slettes eller redigeres herfra.
+  let actions = null;
+  if (item && activeTab === "planer") {
+    let type = "paamindelse";
+    if (item.isEvent) {
+      type = "begivenhed";
+    }
+    actions = <DayActions type={type} id={item.dbId} date={dato} tab={activeTab} />;
+  } else if (item && activeTab === "noter") {
+    actions = <DayActions type="note" id={item.id} date={dato} tab={activeTab} />;
+  }
+
   const tabs = [
     { id: "planer", label: TABS.planer.label, count: plans.length },
     { id: "noter", label: TABS.noter.label, count: notes.length },
@@ -263,6 +279,8 @@ export default async function DayPage({ searchParams }) {
         <CardStack more={more} centered={centered}>
           {cardContent}
         </CardStack>
+
+        {actions}
       </section>
     </main>
   );

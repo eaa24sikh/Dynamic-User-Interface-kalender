@@ -1,7 +1,7 @@
 "use server";
 
 // Denne fil kører på serveren. createItem bliver kaldt,
-// når man trykker "Gem" på /opret.
+// når man trykker "Gem" på /opret – både når man opretter og redigerer.
 
 import { redirect } from "next/navigation";
 import { createClient, getCalendarId } from "@/lib/supabase/server";
@@ -39,7 +39,8 @@ function getText(formData, name) {
   return trimmed;
 }
 
-// Gemmer en påmindelse, note eller begivenhed i Supabase.
+// Gemmer en ny påmindelse, note eller begivenhed i Supabase – eller retter en der findes,
+// hvis formularen har et id (så redigerer man).
 // Går det godt, sendes man videre til dagssiden.
 // Går det galt, gives en fejlbesked tilbage, som formularen viser.
 //
@@ -53,6 +54,7 @@ export async function createItem(previousState, formData) {
   const title = getText(formData, "title");
   const date = formData.get("date");
   const slot = formData.get("slot");
+  const id = formData.get("id");
 
   if (!title) {
     return { error: "Skriv en titel" };
@@ -62,7 +64,8 @@ export async function createItem(previousState, formData) {
   }
 
   const supabase = createClient();
-  let result;
+  let table;
+  let row;
   let tab;
 
   if (type === "paamindelse") {
@@ -71,13 +74,14 @@ export async function createItem(previousState, formData) {
     }
 
     // Klokkeslættet gemmes i remind_at sammen med datoen
-    result = await supabase.from("reminders").insert({
+    table = "reminders";
+    row = {
       title: title,
       date: date,
       remind_at: toDatabaseTimestamp(date, slot),
       alarm: formData.get("alarm") === "on",
       repeat: formData.get("repeat"),
-    });
+    };
     tab = "planer";
   } else if (type === "note") {
     const content = getText(formData, "content");
@@ -85,11 +89,12 @@ export async function createItem(previousState, formData) {
       return { error: "Skriv en note" };
     }
 
-    result = await supabase.from("event_notes").insert({
+    table = "event_notes";
+    row = {
       title: title,
       date: date,
       content: content,
-    });
+    };
     tab = "noter";
   } else if (type === "begivenhed") {
     if (!isSlot(slot)) {
@@ -109,7 +114,8 @@ export async function createItem(previousState, formData) {
       reminder = minutesBefore;
     }
 
-    result = await supabase.from("events").insert({
+    table = "events";
+    row = {
       calendar_id: calendarId,
       title: title,
       location: getText(formData, "location"),
@@ -119,10 +125,18 @@ export async function createItem(previousState, formData) {
       reminder: reminder,
       friends: getText(formData, "invitees"),
       stickers: getText(formData, "sticker"),
-    });
+    };
     tab = "planer";
   } else {
     return { error: "Vælg hvad du vil oprette" };
+  }
+
+  // Med et id rettes den række, der findes. Uden id laves en ny.
+  let result;
+  if (id) {
+    result = await supabase.from(table).update(row).eq("id", id);
+  } else {
+    result = await supabase.from(table).insert(row);
   }
 
   if (result.error) {
