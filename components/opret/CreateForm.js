@@ -99,10 +99,15 @@ function DateInput({ date, onChange }) {
   );
 }
 
-// Rullemenuen med tidspunkter
-function SlotSelect({ className }) {
+// Rullemenuen med tidspunkter. Starter på 09:00, hvis der ikke er et gemt tidspunkt.
+function SlotSelect({ className, initialSlot }) {
+  let slot = "09:00";
+  if (initialSlot) {
+    slot = initialSlot;
+  }
+
   return (
-    <select name="slot" defaultValue="09:00" className={className} aria-label="Tidspunkt">
+    <select name="slot" defaultValue={slot} className={className} aria-label="Tidspunkt">
       {SLOTS.map((slot) => (
         <option key={slot.value} value={slot.value}>
           {slot.label}
@@ -112,8 +117,14 @@ function SlotSelect({ className }) {
   );
 }
 
-// Felterne når "Påmindelse" er valgt
-function ReminderFields({ date, setDate }) {
+// Felterne når "Påmindelse" er valgt.
+// initial er de gemte værdier, når man redigerer (ellers et tomt objekt).
+function ReminderFields({ date, setDate, initial }) {
+  let repeat = "aldrig";
+  if (initial.repeat) {
+    repeat = initial.repeat;
+  }
+
   return (
     <>
       <div className={styles.list}>
@@ -124,14 +135,14 @@ function ReminderFields({ date, setDate }) {
         </label>
         <div className={styles.row}>
           <Icon src="/icons/opret/time.svg" width={18} height={18} />
-          <SlotSelect className={`${styles.slot} ${styles.slotPlain}`} />
+          <SlotSelect className={`${styles.slot} ${styles.slotPlain}`} initialSlot={initial.slot} />
         </div>
         <label className={`${styles.row} ${styles.spread}`}>
           <span className={styles.rowLabel}>
             <Icon src="/icons/opret/bell.svg" width={18} height={18} />
             <span className={styles.interText}>Alarm</span>
           </span>
-          <Toggle name="alarm" />
+          <Toggle name="alarm" defaultChecked={initial.alarm} />
         </label>
       </div>
 
@@ -143,7 +154,7 @@ function ReminderFields({ date, setDate }) {
           <span className={styles.rowText}>Gentag</span>
         </span>
         <span className={styles.repeatChoice}>
-          <select name="repeat" defaultValue="aldrig" className={styles.repeatSelect}>
+          <select name="repeat" defaultValue={repeat} className={styles.repeatSelect}>
             {REPEAT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -162,17 +173,27 @@ function ReminderFields({ date, setDate }) {
 
 // Felterne når "Note" er valgt.
 // Noten gemmes på den dag, man kom fra (?dato= i adressen).
-function NoteFields({ date }) {
+function NoteFields({ date, initial }) {
   return (
     <div className={`${styles.card} ${styles.noteCard}`}>
       <input type="hidden" name="date" value={date} />
-      <textarea name="content" className={styles.noteText} placeholder="Skriv din note her…" aria-label="Note" />
+      <textarea name="content" defaultValue={initial.content} className={styles.noteText} placeholder="Skriv din note her…" aria-label="Note" />
     </div>
   );
 }
 
 // Felterne når "Begivenhed" er valgt
-function EventFields({ date, setDate }) {
+function EventFields({ date, setDate, initial }) {
+  // "Påmindelse før" er 1 time før, når man opretter.
+  // Når man redigerer (så er titlen udfyldt), er det det gemte – eller "Ingen".
+  let reminder = "60";
+  if (initial.title) {
+    reminder = "";
+    if (initial.reminder) {
+      reminder = String(initial.reminder);
+    }
+  }
+
   return (
     <>
       <div className={styles.list}>
@@ -182,18 +203,18 @@ function EventFields({ date, setDate }) {
             <span className={styles.rowText}>{formatShortDate(parseIsoDate(date))}</span>
             <DateInput date={date} onChange={setDate} />
           </label>
-          <SlotSelect className={styles.slot} />
+          <SlotSelect className={styles.slot} initialSlot={initial.slot} />
         </div>
         <label className={`${styles.row} ${styles.tight}`}>
           <Icon src="/icons/opret/location.svg" width={21} height={21} />
-          <input name="location" className={`${styles.interText} ${styles.textInput}`} placeholder="Tilføj sted" />
+          <input name="location" defaultValue={initial.location} className={`${styles.interText} ${styles.textInput}`} placeholder="Tilføj sted" />
         </label>
         <label className={`${styles.row} ${styles.spread}`}>
           <span className={styles.rowLabel}>
             <Icon src="/icons/opret/bell.svg" width={18} height={18} />
             <span className={styles.interText}>Påmindelse</span>
           </span>
-          <select name="reminder" defaultValue="60" className={styles.valueSelect}>
+          <select name="reminder" defaultValue={reminder} className={styles.valueSelect}>
             {REMINDER_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -206,7 +227,7 @@ function EventFields({ date, setDate }) {
             <Icon src="/icons/opret/people.svg" width={19} height={19} />
             <span className={styles.interText}>Inviter venner</span>
           </span>
-          <input name="invitees" className={`${styles.interText} ${styles.inviteInput}`} placeholder="Tilføj navne" />
+          <input name="invitees" defaultValue={initial.invitees} className={`${styles.interText} ${styles.inviteInput}`} placeholder="Tilføj navne" />
         </label>
       </div>
 
@@ -215,7 +236,7 @@ function EventFields({ date, setDate }) {
         <div className={styles.stickerRow}>
           {STICKERS.map((sticker) => (
             <label key={sticker.name} className={styles.sticker}>
-              <input type="radio" name="sticker" value={sticker.name} />
+              <input type="radio" name="sticker" value={sticker.name} defaultChecked={initial.sticker === sticker.name} />
               <Image
                 src={`/icons/opret/sticker-${sticker.name}.svg`}
                 alt={sticker.name}
@@ -235,7 +256,9 @@ function EventFields({ date, setDate }) {
 //
 //   initialType – den knap der er valgt fra start, fx "note"
 //   initialDate – den dag der oprettes på, fx "2026-11-13"
-export default function CreateForm({ initialType, initialDate }) {
+//   initial     – de gemte værdier, når man redigerer (kan udelades)
+//   editId      – id'et på det der redigeres (kan udelades, så oprettes der noget nyt)
+export default function CreateForm({ initialType, initialDate, initial = {}, editId }) {
   const router = useRouter();
 
   // Hvad man er ved at oprette, og på hvilken dag
@@ -260,9 +283,26 @@ export default function CreateForm({ initialType, initialDate }) {
     saveText = "Gemmer…";
   }
 
+  // Overskriften følger det valgte, fx "Opret note" eller "Rediger note"
+  let headingText = "påmindelse";
+  if (type === "note") {
+    headingText = "note";
+  } else if (type === "begivenhed") {
+    headingText = "begivenhed";
+  }
+  if (editId) {
+    headingText = `Rediger ${headingText}`;
+  } else {
+    headingText = `Opret ${headingText}`;
+  }
+
   return (
     <form action={formAction} className={styles.page}>
       <input type="hidden" name="type" value={type} />
+      {editId && <input type="hidden" name="id" value={editId} />}
+
+      {/* Overskrift til skærmlæsere. Se .skjult i app/globals.css */}
+      <h1 className="skjult">{headingText}</h1>
 
       <header className={styles.header}>
         <button type="button" className={styles.cancel} onClick={cancel}>
@@ -288,6 +328,7 @@ export default function CreateForm({ initialType, initialDate }) {
               type="button"
               role="radio"
               aria-checked={isActive}
+              disabled={editId && !isActive}
               className={buttonClass}
               onClick={() => setType(option.id)}
             >
@@ -299,13 +340,13 @@ export default function CreateForm({ initialType, initialDate }) {
 
       <label className={`${styles.card} ${styles.titleCard}`}>
         <span className={styles.titleLabel}>Titel</span>
-        <input name="title" className={styles.titleInput} autoComplete="off" required />
+        <input name="title" defaultValue={initial.title} className={styles.titleInput} autoComplete="off" required />
       </label>
 
       {/* Felterne skifter alt efter hvad der er valgt øverst */}
-      {type === "paamindelse" && <ReminderFields date={date} setDate={setDate} />}
-      {type === "note" && <NoteFields date={date} />}
-      {type === "begivenhed" && <EventFields date={date} setDate={setDate} />}
+      {type === "paamindelse" && <ReminderFields date={date} setDate={setDate} initial={initial} />}
+      {type === "note" && <NoteFields date={date} initial={initial} />}
+      {type === "begivenhed" && <EventFields date={date} setDate={setDate} initial={initial} />}
 
       {state.error && (
         <p className={styles.error} role="alert">
